@@ -7,6 +7,6 @@ wheels/
 .idea
 .env
 *.egg-info
-
+app.db
 # Virtual environments
 .venv
