@@ -53,9 +53,15 @@ class CommentCreate(BaseModel):
 class CommentOut(BaseModel):
     id: int
     user_id: int
+    username: str
     video_id: int
     text: str
     created_at: datetime
 
     class Config:
         from_attributes = True
+
+        
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
