@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordBearer # Tool to extract token from h
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.sql.expression import func
 from datetime import datetime, timedelta
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from database import get_db
 import bcrypt
@@ -19,6 +20,19 @@ load_dotenv()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 app = FastAPI()
+origins = [
+    "http://localhost:5173",
+    "https://yourfreedomain.com"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*']
+)
+
 app.mount("/videos", StaticFiles(directory="storage/videos"), name="videos")
 app.mount("/thumbnails", StaticFiles(directory="storage/thumbnails"), name="thumbnails")
 
