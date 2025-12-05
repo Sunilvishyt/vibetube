@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException, status, File, Form, UploadFile
+from fastapi import FastAPI, Depends, HTTPException, status, File, Form, UploadFile, Query
 from fastapi.security import OAuth2PasswordBearer # Tool to extract token from header
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.sql.expression import func
 from datetime import datetime, timedelta
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from sqlalchemy import or_, case
 from database import get_db
 import bcrypt
 import pydantic_models
@@ -329,3 +330,48 @@ def verify_token(db:Session = Depends(get_db),
             detail="User not found or token invalid"
         )
     return {"details":user}
+
+
+@app.get("/search")
+def search_videos(
+    query: str = Query(..., min_length=1),
+    page: int = Query(1, ge=1),
+    limit: int = Query(24, le=100),
+    db: Session = Depends(get_db),
+):
+    offset = (page - 1) * limit
+    like_query = f"%{query}%"
+
+    videos = (
+        db.query(database_models.Video)
+        .filter(
+            or_(
+                database_models.Video.title.ilike(like_query),
+                database_models.Video.description.ilike(like_query),
+                database_models.Video.username.ilike(like_query),
+            )
+        )
+        .order_by(
+            case(
+        (database_models.Video.title.ilike(like_query), 1),
+                (database_models.Video.username.ilike(like_query), 2),
+                else_=3
+    ),
+    database_models.Video.views.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return [
+        {
+            "id": video.id,
+            "title": video.title,
+            "thumbnail_url": video.thumbnail_url,
+            "video_url": video.video_url,
+            "username": video.username,
+            "views": video.views,
+            "created_at": video.created_at.isoformat(),
+        }
+        for video in videos
+    ]

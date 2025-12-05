@@ -207,7 +207,6 @@ export const Navbar08 = React.forwardRef(
       userEmail = "john@example.com",
       userAvatar,
       onNavItemClick,
-      onSearchSubmit,
       onUserItemClick,
       ...props
     },
@@ -253,10 +252,10 @@ export const Navbar08 = React.forwardRef(
     const handleSearchSubmit = (e) => {
       e.preventDefault();
       const formData = new FormData(e.currentTarget);
-      const query = formData.get("search");
-      if (onSearchSubmit) {
-        onSearchSubmit(query);
-      }
+      const query = (formData.get("search") || "").trim();
+      if (!query) return;
+      // send the user to /search?q=...
+      navigate(`/search?q=${encodeURIComponent(query)}`);
     };
 
     const handleUserMenuItemClick = (itemKey) => {
