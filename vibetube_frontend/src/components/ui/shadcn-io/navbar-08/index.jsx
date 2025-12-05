@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useId } from "react";
 import { SearchIcon, BellIcon, ChevronDownIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -26,6 +27,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Upload } from "lucide-react";
 
 // Simple logo component for the navbar
 const Logo = (props) => {
@@ -199,17 +201,13 @@ export const Navbar08 = React.forwardRef(
     {
       className,
       logo = <Logo />,
-      logoHref = "#",
       navigationLinks = defaultNavigationLinks,
       searchPlaceholder = "Search...",
-      searchShortcut = "⌘K",
       userName = "John Doe",
       userEmail = "john@example.com",
       userAvatar,
-      notificationCount = 3,
       onNavItemClick,
       onSearchSubmit,
-      onNotificationItemClick,
       onUserItemClick,
       ...props
     },
@@ -261,6 +259,7 @@ export const Navbar08 = React.forwardRef(
       }
     };
 
+    const navigate = useNavigate();
     return (
       <header
         ref={combinedRef}
@@ -350,6 +349,7 @@ export const Navbar08 = React.forwardRef(
                 </div>
               </form>
             </div>
+
             {/* Right side */}
             <div className="flex flex-1 items-center justify-end gap-2">
               {/* Notification
@@ -357,6 +357,15 @@ export const Navbar08 = React.forwardRef(
                 notificationCount={notificationCount}
                 onItemClick={onNotificationItemClick}
               /> */}
+              <span title="Upload video">
+                <Upload
+                  size={22}
+                  cursor="pointer"
+                  onClick={() => {
+                    navigate("/upload");
+                  }}
+                />
+              </span>
               {/* User menu */}
               <UserMenu
                 userName={userName}

@@ -256,9 +256,16 @@ def like_video(data: pydantic_models.LikeToggle,
 
 
 @app.get("/likes/{video_id}")
-def get_like_count(video_id: int, db: Session = Depends(get_db)):
+def get_like_count(video_id: int, db: Session = Depends(get_db), current_user_id:int = Depends(get_current_user_id)):
     count = db.query(database_models.Like).filter(database_models.Like.video_id == video_id).count()
-    return {"video_id": video_id, "likes": count}
+    user_liked = db.query(database_models.Like).filter(
+        database_models.Like.video_id == video_id,
+        database_models.Like.user_id == current_user_id).first()
+
+    if user_liked:
+        return {"liked": "true", "likes": count}
+    else:
+        return {"liked": "false", "likes": count}
 
 
 

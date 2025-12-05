@@ -10,47 +10,54 @@ function Homepage() {
   const navigate = useNavigate();
   const [videos, setVideos] = useState([]);
 
-  useEffect(() => {
-    const verify_token = async () => {
-      const token = localStorage.getItem("access_token");
-      if (!token) {
+  const verify_token = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      navigate("/login", { replace: true });
+      return false;
+    }
+
+    try {
+      await axios.get("http://localhost:8000/verify-token", {
+        // This 'headers' object is where you place the Authorization token
+        headers: {
+          // This is the essential part for the token to be sent to FastAPI
+          Authorization: `Bearer ${token}`,
+          // Note: 'Content-Type': 'application/json' is usually unnecessary for GET requests
+        },
+      });
+      return true;
+    } catch (error) {
+      // 3. Handle Errors (401 Unauthorized, 403 Forbidden, etc.)
+      const statusCode = error.response?.status;
+
+      if (statusCode === 401 || statusCode === 403) {
+        // Token is invalid, expired, or user not found -> FORCE LOGOUT/REDIRECT
+        localStorage.removeItem("access_token"); // Clean up stored token
         navigate("/login", { replace: true });
+        return false; // Stop execution here
       }
+    }
+  };
 
-      try {
-        await axios.get("http://localhost:8000/verify-token", {
-          // This 'headers' object is where you place the Authorization token
-          headers: {
-            // This is the essential part for the token to be sent to FastAPI
-            Authorization: `Bearer ${token}`,
-            // Note: 'Content-Type': 'application/json' is usually unnecessary for GET requests
-          },
-        });
-      } catch (error) {
-        // 3. Handle Errors (401 Unauthorized, 403 Forbidden, etc.)
-        const statusCode = error.response?.status;
+  useEffect(() => {
+    const initializePage = async () => {
+      const isAuthenticated = await verify_token();
 
-        if (statusCode === 401 || statusCode === 403) {
-          // Token is invalid, expired, or user not found -> FORCE LOGOUT/REDIRECT
-          localStorage.removeItem("access_token"); // Clean up stored token
-          navigate("/login", { replace: true });
-          return; // Stop execution here
-        }
-      }
-    };
-    verify_token();
-
-    const fetchVideos = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/videos");
-        setVideos(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching videos:", error);
-        setVideos([]);
+      if (isAuthenticated) {
+        const fetchVideos = async () => {
+          try {
+            const response = await axios.get("http://localhost:8000/videos");
+            setVideos(response.data);
+          } catch (error) {
+            console.error("Error fetching videos:", error);
+            setVideos([]);
+          }
+        };
+        fetchVideos();
       }
     };
-    fetchVideos();
+    initializePage();
   }, [navigate]);
 
   function formatTimeAgo(timestamp) {
@@ -73,6 +80,8 @@ function Homepage() {
           <div className="flex w-[90vw] max-w-[1300px] gap-6 flex-wrap ">
             {videos.map((video) => (
               <VideoCard
+                key={video.id}
+                id={video.id}
                 thumbnail={video.thumbnail_url}
                 duration="5:00"
                 title={video.title}
