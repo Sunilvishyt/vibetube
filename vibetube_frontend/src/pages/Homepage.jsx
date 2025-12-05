@@ -9,6 +9,8 @@ import axios from "axios";
 function Homepage() {
   const navigate = useNavigate();
   const [videos, setVideos] = useState([]);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
 
   const verify_token = async () => {
     const token = localStorage.getItem("access_token");
@@ -18,7 +20,7 @@ function Homepage() {
     }
 
     try {
-      await axios.get("http://localhost:8000/verify-token", {
+      const res = await axios.get("http://localhost:8000/verify-token", {
         // This 'headers' object is where you place the Authorization token
         headers: {
           // This is the essential part for the token to be sent to FastAPI
@@ -26,6 +28,10 @@ function Homepage() {
           // Note: 'Content-Type': 'application/json' is usually unnecessary for GET requests
         },
       });
+      const user = res.data.details.username;
+      const user_email = res.data.details.email;
+      setUsername(user);
+      setEmail(user_email);
       return true;
     } catch (error) {
       // 3. Handle Errors (401 Unauthorized, 403 Forbidden, etc.)
@@ -72,7 +78,7 @@ function Homepage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar userName={username} userEmail={email} />
       <hr />
       <div className="bg-chart-3 h-fit w-full p-8">
         <h1 className="font-bold size-20 w-full">Recommended for you</h1>

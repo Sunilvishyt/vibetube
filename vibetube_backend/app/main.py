@@ -328,3 +328,4 @@ def verify_token(db:Session = Depends(get_db),
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found or token invalid"
         )
+    return {"details":user}

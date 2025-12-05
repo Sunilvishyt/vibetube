@@ -49,23 +49,23 @@ export default function Comments({ videoId }) {
 
   return (
     <div>
-      <form onSubmit={postComment} className="flex gap-2 items-start">
+      <form onSubmit={postComment} className="flex-row gap-3 items-start">
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 p-2 border rounded"
+          className="flex-1 p-2 border rounded w-full bg-input mb-1 text-amber-50"
           rows={2}
           placeholder="Add a public comment..."
         />
         <button
           disabled={loading}
-          className="px-3 py-1 bg-blue-600 text-white rounded"
+          className="px-3 py-1  bg-primary text-white rounded w-full cursor-pointer"
         >
-          Comment
+          Post Comment
         </button>
       </form>
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-5 space-y-3">
         {comments.map((c) => (
           <div key={c.id} className="flex gap-3">
             <img
