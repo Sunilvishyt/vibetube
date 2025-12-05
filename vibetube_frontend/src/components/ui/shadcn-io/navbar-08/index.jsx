@@ -216,7 +216,7 @@ export const Navbar08 = React.forwardRef(
     const [isMobile, setIsMobile] = useState(false);
     const containerRef = useRef(null);
     const searchId = useId();
-
+    const navigate = useNavigate();
     useEffect(() => {
       const checkWidth = () => {
         if (containerRef.current) {
@@ -259,7 +259,21 @@ export const Navbar08 = React.forwardRef(
       }
     };
 
-    const navigate = useNavigate();
+    const handleUserMenuItemClick = (itemKey) => {
+      if (itemKey === "logout") {
+        // 1. Clear local storage (essential for a proper logout)
+        localStorage.removeItem("access_token");
+
+        // 2. Execute navigation
+        navigate("/logout");
+      }
+
+      // 3. Call the original external prop (if it was provided)
+      if (onUserItemClick) {
+        onUserItemClick(itemKey);
+      }
+    };
+
     return (
       <header
         ref={combinedRef}
@@ -371,7 +385,7 @@ export const Navbar08 = React.forwardRef(
                 userName={userName}
                 userEmail={userEmail}
                 userAvatar={userAvatar}
-                onItemClick={onUserItemClick}
+                onItemClick={handleUserMenuItemClick}
               />
             </div>
           </div>
