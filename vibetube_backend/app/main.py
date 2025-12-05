@@ -166,9 +166,13 @@ async def upload_video(
     with open(thumb_path, "wb") as buffer:
         shutil.copyfileobj(thumbnail.file, buffer)
 
+    #fetch username
+    user = db.query(database_models.User).filter_by(id=current_user_id).first()
+
     # 5. Save to database
     video = database_models.Video(
         user_id=current_user_id,
+        username=user.username,
         video_url=f"http://127.0.0.1:8000/videos/{video_filename}",
         thumbnail_url=f"http://127.0.0.1:8000/thumbnails/{thumb_filename}",
         title=title,
@@ -308,4 +312,12 @@ def get_comments(video_id: int, db: Session = Depends(get_db)):
   }
 ]
 """
-
+@app.get('/verify-token')
+def verify_token(db:Session = Depends(get_db),
+                 current_user_id : int = Depends(get_current_user_id)):
+    user = db.query(database_models.User).filter_by(id=current_user_id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found or token invalid"
+        )

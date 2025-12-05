@@ -31,6 +31,7 @@ class VideoCreate(BaseModel):
 class VideoOut(VideoCreate):
     id: int
     user_id: int
+    username: str
     video_url: str
     thumbnail_url: str
     views: int
@@ -38,6 +39,7 @@ class VideoOut(VideoCreate):
 
     class Config:
         from_attributes = True
+
 
 
 class LikeToggle(BaseModel):

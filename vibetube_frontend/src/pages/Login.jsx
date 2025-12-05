@@ -45,13 +45,12 @@ const RegisterPage = () => {
     // --- Example API Call (Uncomment and configure when ready) ---
     try {
       const response = await axios.post("http://localhost:8000/login", values);
-      console.log("Registration successful!", response.data);
       localStorage.setItem("access_token", response.data.access_token);
       // Redirect user to login page or home page
-      // navigate("/login");
+      navigate("/");
     } catch (error) {
       // Handle error message and display to user
-      console.error("Registration failed:", error.response.data.detail);
+      console.error("Login failed:", error.response.data.detail);
       // setFormError(error.response.data.detail);
     }
   }

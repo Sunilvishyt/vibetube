@@ -31,6 +31,7 @@ class Video(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    username = Column(String(50), nullable=False)
 
     title = Column(String(200), nullable=False)
     description = Column(Text, nullable=True)
