@@ -71,10 +71,10 @@ export default function Comments({ videoId }) {
             <img
               src={c.user?.avatar || "https://placehold.co/40x40"}
               className="h-8 w-8 rounded-full object-cover"
-              alt={c.user?.username}
+              alt={c.username}
             />
             <div>
-              <div className="text-sm font-semibold">{c.user?.username}</div>
+              <div className="text-sm font-semibold">{c.username}</div>
               <div className="text-sm text-muted-foreground">{c.text}</div>
             </div>
           </div>

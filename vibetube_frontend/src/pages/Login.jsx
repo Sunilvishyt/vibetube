@@ -100,6 +100,7 @@ const RegisterPage = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
+                        autocomplete="off"
                         className="bg-background"
                         placeholder="Enter password"
                         type="password"
