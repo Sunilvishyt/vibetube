@@ -84,10 +84,10 @@ const VideoCard = ({
 
   return (
     <Link to={`/watch/${id}`} className="block">
-      <Card className="w-full max-w-72 p-0 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer bg-background">
+      <Card className="w-61 h-60 p-0 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer bg-background">
         {/* Thumbnail */}
         <CardHeader className="p-0 relative">
-          <div className="relative w-full aspect-video">
+          <div className="relative w-full aspect-video ">
             <img
               src={thumbnail}
               alt={title}
@@ -106,7 +106,7 @@ const VideoCard = ({
         </CardHeader>
 
         {/* Content - Using px-4 for consistent alignment, using bg-white for seamless look */}
-        <CardContent className="flex gap-3 px-4 pt-4 pb-3 bg-background">
+        <CardContent className="flex gap-3 pl-3 px-4 pt-4 pb-3 bg-background">
           <Avatar className="h-10 w-10 shrink-0">
             <AvatarImage src={channelAvatar} />
             <AvatarFallback>
