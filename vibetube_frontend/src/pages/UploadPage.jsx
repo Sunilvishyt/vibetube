@@ -34,7 +34,8 @@ const UploadPage = () => {
     { value: "vlogs", label: "Vlogs" },
     { value: "music", label: "Music" },
     { value: "tech", label: "Tech & Science" },
-    { value: "entertainment", label: "entertainment" },
+    { value: "entertainment", label: "Entertainment" },
+    { value: "news", label: "News & Politics" },
   ];
 
   const uploadVideo = async (e) => {

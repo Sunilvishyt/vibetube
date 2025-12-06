@@ -9,7 +9,13 @@ function Logout() {
       console.log("loggin out");
 
       localStorage.removeItem("access_token");
-      navigate("/login", { replace: true });
+      navigate("/login", {
+        replace: true,
+        state: {
+          successMessage: "Successfully logged out",
+          fromLogout: true,
+        },
+      });
     };
     logoutfnc();
   });

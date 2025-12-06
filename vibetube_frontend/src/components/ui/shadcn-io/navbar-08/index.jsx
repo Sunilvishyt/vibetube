@@ -190,7 +190,7 @@ const UserMenu = ({
 
 // Default navigation links
 const defaultNavigationLinks = [
-  { href: "#", label: "Home", active: true },
+  { href: "/", label: "Home", active: true },
   { href: "#", label: "Features" },
   { href: "#", label: "Pricing" },
   { href: "#", label: "About" },
@@ -264,7 +264,7 @@ export const Navbar08 = React.forwardRef(
         localStorage.removeItem("access_token");
 
         // 2. Execute navigation
-        navigate("/logout");
+        navigate("/logout", { replace: true });
       }
 
       // 3. Call the original external prop (if it was provided)
@@ -273,6 +273,26 @@ export const Navbar08 = React.forwardRef(
       }
     };
 
+    const handleNavItemClickInternal = (e, linkHref) => {
+      e.preventDefault();
+
+      // Check if the link is our designated route link (e.g., '/')
+      if (linkHref === "/") {
+        navigate("/"); // Use react-router's navigate for the home route
+        return;
+      }
+
+      // For all other links, use the external handler prop if provided
+      if (onNavItemClick && linkHref) {
+        onNavItemClick(linkHref);
+      }
+
+      // OPTIONAL: If you want other links (like '#') to also navigate using the router:
+      // if (linkHref && linkHref !== "#") {
+      //     navigate(linkHref);
+      //     return;
+      // }
+    };
     return (
       <header
         ref={combinedRef}
@@ -399,9 +419,7 @@ export const Navbar08 = React.forwardRef(
                       <NavigationMenuLink
                         href={link.href}
                         onClick={(e) => {
-                          e.preventDefault();
-                          if (onNavItemClick && link.href)
-                            onNavItemClick(link.href);
+                          handleNavItemClickInternal(e, link.href);
                         }}
                         className={cn(
                           "text-muted-foreground hover:text-primary py-1.5 font-medium transition-colors cursor-pointer group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50",

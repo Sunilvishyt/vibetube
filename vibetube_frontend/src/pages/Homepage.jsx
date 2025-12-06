@@ -2,12 +2,15 @@ import React from "react";
 import Navbar from "@/components/my_components/navbar";
 import VideoCard from "@/components/my_components/VideoCard";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import axios from "axios";
+import { toast, Toaster } from "sonner";
+import { Heart } from "lucide-react";
 
 function Homepage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [videos, setVideos] = useState([]);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -40,7 +43,13 @@ function Homepage() {
       if (statusCode === 401 || statusCode === 403) {
         // Token is invalid, expired, or user not found -> FORCE LOGOUT/REDIRECT
         localStorage.removeItem("access_token"); // Clean up stored token
-        navigate("/login", { replace: true });
+        navigate("/login", {
+          replace: true,
+          state: {
+            errorMessage: "Login Expired, Please login again",
+            fromHomepage: true,
+          },
+        });
         return false; // Stop execution here
       }
     }
@@ -66,6 +75,37 @@ function Homepage() {
     initializePage();
   }, [navigate]);
 
+  useEffect(() => {
+    const message = location.state?.successMessage;
+
+    if (message) {
+      // Show the toast
+      toast.custom((t) => (
+        <div className="bg-gradient-to-r from-primary to-chart-1 text-white p-3 rounded-xl shadow-2xl w-full max-w-sm">
+          <div className="flex items-center gap-3">
+            <Heart className="h-3 w-5" />
+            <div>
+              <div className="font-semibold  text-lg">{message}</div>
+              <div className="text-sm opacity-95">
+                Enjoy videos personalized for you.
+              </div>
+            </div>
+            <button
+              onClick={() => toast.dismiss(t)}
+              className="ml-auto bg-white/20 hover:bg-white/30 rounded-full h-8 w-8 text-xs font-semibold flex items-center justify-center shrink-0"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      ));
+
+      // CRITICAL: Clear the state immediately after showing the toast
+      // The `replace: true` is essential here.
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state?.successMessage, location.pathname, navigate]);
+
   function formatTimeAgo(timestamp) {
     // 1. Parse the ISO string into a JavaScript Date object
     const date = parseISO(timestamp);
@@ -78,6 +118,8 @@ function Homepage() {
 
   return (
     <>
+      <Toaster position="bottom-right" richColors />
+
       <Navbar userName={username} userEmail={email} />
       <hr />
       <div className="bg-chart-3 h-fit w-full p-8">

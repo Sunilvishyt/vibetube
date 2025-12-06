@@ -128,7 +128,7 @@ def login_user_for_access_token(user_details: pydantic_models.UserLogin,
         )
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="username does not Exists!",
+        detail="username does not exists!",
         headers={"WWW-Authenticate": "Bearer"},
     )
 

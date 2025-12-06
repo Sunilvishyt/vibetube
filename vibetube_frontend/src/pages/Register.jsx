@@ -1,5 +1,5 @@
 "use client";
-
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -38,6 +38,7 @@ const formSchema = z.object({
 });
 
 const RegisterPage = () => {
+  const [Error, setError] = useState("");
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,21 +50,20 @@ const RegisterPage = () => {
 
   // 💡 This is where you would put your Axios API call to FastAPI
   async function onSubmit(values) {
-    console.log("Form submitted with values:", values);
-
     // --- Example API Call (Uncomment and configure when ready) ---
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/register",
-        values
-      );
-      console.log("Registration successful!", response.data);
+      await axios.post("http://localhost:8000/register", values);
       // Redirect user to login page or home page
-      navigate("/login");
+      navigate("/login", {
+        state: {
+          successMessage: "Successfully registered!, login to continue",
+          fromRegister: true,
+        },
+      });
     } catch (error) {
       // Handle error message and display to user
-      console.error("Registration failed:", error.response.data.detail);
+      setError(error.response.data.detail);
       // setFormError(error.response.data.detail);
     }
   }
@@ -96,8 +96,12 @@ const RegisterPage = () => {
                         className="bg-background"
                         placeholder="username"
                         {...field}
+                        onClick={() => setError("")}
                       />
                     </FormControl>
+                    <FormDescription className="text-red-600">
+                      {Error ? Error : ""}
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
