@@ -188,12 +188,41 @@ async def upload_video(
     return video
 
 
+DEFAULT_VIDEO_LIMIT = 12
 @app.get("/getvideos/{vid_query}", response_model=list[pydantic_models.VideoOut])
-def get_videos(vid_query, db: Session = Depends(get_db)):
-    if str(vid_query) == "random":
-        videos = db.query(database_models.Video).order_by(func.random()).limit(20).all()
+def get_videos(
+        vid_query: str,
+        limit: int = Query(DEFAULT_VIDEO_LIMIT, ge=1, le=50),  # Max 50 per request
+        offset: int = Query(0, ge=0),
+        db: Session = Depends(get_db)
+):
+    """
+    Fetches videos with pagination using limit and offset.
+    """
+    VALID_CATEGORIES = {"music", "movies", "gaming", "anime", "education", "entertainment", "tech", "news", "vlogs"}
+
+    if vid_query != "random" and vid_query not in VALID_CATEGORIES:
+        raise HTTPException(400, "Invalid category")
+
+    # Base query
+    basequery = db.query(database_models.Video)
+
+    if vid_query == "random":
+        # Random videos: Apply ordering, limit, and offset
+        videos = (
+            basequery.order_by(func.random()).offset(offset).limit(limit).all()
+        )
     else:
-        videos = db.query(database_models.Video).filter_by(category=str(vid_query)).all()
+        # Category videos: Filter by category, then apply limit and offset
+        videos = (
+            basequery
+            .filter(database_models.Video.category == vid_query)
+            # You might want to order by date or views here, not func.random()
+            .order_by(database_models.Video.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
     return videos
 
 """
@@ -412,9 +441,7 @@ def increase_view(data:pydantic_models.ViewIncrement,
     else:
         return {"msg":"view already registered!"}
 
-@app.get("/getviews/{video_id}")
-def get_views(video_id: int, db: Session = Depends(get_db)):
-    count = db.query(database_models.View).filter(database_models.View.video_id == video_id).count()
-    return {"count":count}
+
+
 
 

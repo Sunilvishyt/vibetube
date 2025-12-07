@@ -7,13 +7,25 @@ import { formatDistanceToNow, parseISO } from "date-fns";
 import axios from "axios";
 import { toast, Toaster } from "sonner";
 import { Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
+const VIDEOS_PER_PAGE = 12;
 function Homepage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [videos, setVideos] = useState([]);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  // 💡 NEW STATE: Keep track of the current offset (which page we are on)
+  const [offset, setOffset] = useState(0);
+  // 💡 NEW STATE: Track if there are more videos to load (if the last fetch returned less than limit)
+  const [hasMore, setHasMore] = useState(true);
+  // 💡 NEW STATE: Track the currently active category/query
+  const [currentQuery, setCurrentQuery] = useState(
+    location.state?.videoQuery || "random"
+  );
+  // 💡 NEW STATE: Loading state for the Load More button
+  const [isLoading, setIsLoading] = useState(false);
 
   const verify_token = async () => {
     const token = localStorage.getItem("access_token");
@@ -55,29 +67,68 @@ function Homepage() {
     }
   };
 
+  // ---------------------------------------------
+  // 💡 CORE FETCH LOGIC
+  // ---------------------------------------------
+  const fetchVideos = async (query, fetchOffset, isLoadMore = false) => {
+    setIsLoading(true); // Start loading
+
+    try {
+      // 💡 Construct the URL with query parameters for limit and offset
+      const response = await axios.get(
+        `http://localhost:8000/getvideos/${query}?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}`
+      );
+
+      const newVideos = response.data;
+
+      // 💡 Update video state: APPEND if loading more, REPLACE if a new category
+      setVideos((prevVideos) =>
+        isLoadMore ? [...prevVideos, ...newVideos] : newVideos
+      );
+
+      // 💡 Update offset for the next request
+      setOffset(fetchOffset + newVideos.length);
+
+      // 💡 Check if we received less than the requested limit, which means no more data
+      setHasMore(newVideos.length === VIDEOS_PER_PAGE);
+    } catch (error) {
+      console.error("Error fetching videos:", error);
+      // Optionally: setHasMore(false) on error to prevent trying again
+      setHasMore(false);
+    } finally {
+      setIsLoading(false); // Stop loading
+    }
+  };
+
   useEffect(() => {
     const initializePage = async () => {
       const isAuthenticated = await verify_token();
 
       if (isAuthenticated) {
-        const fetchVideos = async () => {
-          try {
-            const vidQuery = (await location.state?.videoQuery) || "random";
-            const response = await axios.get(
-              `http://localhost:8000/getvideos/${vidQuery}`
-            );
-            setVideos(response.data);
-            // navigate(location.pathname, { replace: true, state: {} });
-          } catch (error) {
-            console.error("Error fetching videos:", error);
-            setVideos([]);
-          }
-        };
-        fetchVideos();
+        const vidQuery = location.state?.videoQuery || "random";
+
+        if (vidQuery !== currentQuery) {
+          // Reset pagination state for a new category
+          setVideos([]); // Clear old videos
+          setOffset(0);
+          setHasMore(true);
+          setCurrentQuery(vidQuery); // Update tracking query
+
+          // Fetch the first batch for the new category (offset 0)
+          fetchVideos(vidQuery, 0, false);
+        } else if (videos.length === 0) {
+          // Initial load on first component mount for the current query
+          fetchVideos(vidQuery, 0, false);
+        }
       }
     };
     initializePage();
-  }, [location.state?.videoQuery, location.pathname, navigate]);
+  }, [location.state?.videoQuery, location.pathname, navigate, currentQuery]);
+
+  const handleLoadMore = () => {
+    // Use the tracked offset and currentQuery to fetch the next batch
+    fetchVideos(currentQuery, offset, true);
+  };
 
   useEffect(() => {
     const message = location.state?.successMessage;
@@ -144,6 +195,21 @@ function Homepage() {
               />
             ))}
           </div>
+        </div>
+        {/* 💡 LOAD MORE BUTTON */}
+        <div className="flex justify-center w-full mt-8">
+          {hasMore && (
+            <Button
+              onClick={handleLoadMore}
+              disabled={isLoading}
+              className="w-40"
+            >
+              {isLoading ? "Loading..." : "Load More"}
+            </Button>
+          )}
+          {!hasMore && videos.length > 0 && (
+            <p className="text-muted-foreground">You've reached the end!</p>
+          )}
         </div>
       </div>
     </>
