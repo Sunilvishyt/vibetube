@@ -62,8 +62,12 @@ function Homepage() {
       if (isAuthenticated) {
         const fetchVideos = async () => {
           try {
-            const response = await axios.get("http://localhost:8000/videos");
+            const vidQuery = (await location.state?.videoQuery) || "random";
+            const response = await axios.get(
+              `http://localhost:8000/getvideos/${vidQuery}`
+            );
             setVideos(response.data);
+            // navigate(location.pathname, { replace: true, state: {} });
           } catch (error) {
             console.error("Error fetching videos:", error);
             setVideos([]);
@@ -73,7 +77,7 @@ function Homepage() {
       }
     };
     initializePage();
-  }, [navigate]);
+  }, [location.state?.videoQuery, location.pathname, navigate]);
 
   useEffect(() => {
     const message = location.state?.successMessage;

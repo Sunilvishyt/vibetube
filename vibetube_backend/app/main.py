@@ -1,3 +1,4 @@
+from dns.e164 import query
 from fastapi import FastAPI, Depends, HTTPException, status, File, Form, UploadFile, Query
 from fastapi.security import OAuth2PasswordBearer # Tool to extract token from header
 from fastapi.staticfiles import StaticFiles
@@ -187,10 +188,14 @@ async def upload_video(
     return video
 
 
-@app.get("/videos", response_model=list[pydantic_models.VideoOut])
-def get_videos(db: Session = Depends(get_db)):
-    videos = db.query(database_models.Video).order_by(func.random()).limit(20).all()
+@app.get("/getvideos/{vid_query}", response_model=list[pydantic_models.VideoOut])
+def get_videos(vid_query, db: Session = Depends(get_db)):
+    if str(vid_query) == "random":
+        videos = db.query(database_models.Video).order_by(func.random()).limit(20).all()
+    else:
+        videos = db.query(database_models.Video).filter_by(category=str(vid_query)).all()
     return videos
+
 """
 Response body
 Download

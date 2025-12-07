@@ -205,7 +205,7 @@ const UploadPage = () => {
     if (!status) return null;
 
     const baseClass = "p-3 rounded-lg flex items-center space-x-3";
-    let icon, classes, style;
+    let icon, style;
 
     switch (status.type) {
       case "success":

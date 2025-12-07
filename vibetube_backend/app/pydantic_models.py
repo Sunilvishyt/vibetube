@@ -27,7 +27,6 @@ class VideoCreate(BaseModel):
     visibility: Optional[str] = "public"
     category: Optional[str] = None
 
-
 class VideoOut(VideoCreate):
     id: int
     user_id: int
@@ -40,7 +39,8 @@ class VideoOut(VideoCreate):
     class Config:
         from_attributes = True
 
-
+class VideoQuery(BaseModel):
+    vidQuery:str
 
 class LikeToggle(BaseModel):
     video_id: int

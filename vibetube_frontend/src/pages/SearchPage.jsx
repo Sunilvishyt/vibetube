@@ -50,7 +50,13 @@ export default function SearchPage() {
       if (statusCode === 401 || statusCode === 403) {
         // Token is invalid, expired, or user not found -> FORCE LOGOUT/REDIRECT
         localStorage.removeItem("access_token"); // Clean up stored token
-        navigate("/login", { replace: true });
+        navigate("/login", {
+          replace: true,
+          state: {
+            fromSearch: true,
+            errorMessage: "login expired, please login again",
+          },
+        });
         return false; // Stop execution here
       }
     }

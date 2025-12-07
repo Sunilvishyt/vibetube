@@ -54,7 +54,12 @@ export default function WatchPage() {
     fetchVideo();
   }, [id, navigate]);
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  if (loading)
+    return (
+      <div className="p-8 w-full h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   if (error) return <div className="p-8 text-destructive">{error}</div>;
   if (!video) return null;
 

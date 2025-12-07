@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useId } from "react";
 import { SearchIcon, BellIcon, ChevronDownIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -191,9 +191,13 @@ const UserMenu = ({
 // Default navigation links
 const defaultNavigationLinks = [
   { href: "/", label: "Home", active: true },
-  { href: "#", label: "Features" },
-  { href: "#", label: "Pricing" },
-  { href: "#", label: "About" },
+  { href: "/", label: "Entertainment" },
+  { href: "/", label: "Gaming" },
+  { href: "/", label: "Music" },
+  { href: "/", label: "Tech" },
+  { href: "/", label: "Education" },
+  { href: "/", label: "News" },
+  { href: "/", label: "Vlogs" },
 ];
 
 export const Navbar08 = React.forwardRef(
@@ -216,6 +220,8 @@ export const Navbar08 = React.forwardRef(
     const containerRef = useRef(null);
     const searchId = useId();
     const navigate = useNavigate();
+    const location = useLocation();
+    const activeQuery = location.state?.videoQuery || "random";
     useEffect(() => {
       const checkWidth = () => {
         if (containerRef.current) {
@@ -273,12 +279,36 @@ export const Navbar08 = React.forwardRef(
       }
     };
 
-    const handleNavItemClickInternal = (e, linkHref) => {
+    const handleNavItemClickInternal = (e, linkHref, label) => {
       e.preventDefault();
 
       // Check if the link is our designated route link (e.g., '/')
-      if (linkHref === "/") {
-        navigate("/"); // Use react-router's navigate for the home route
+      if (linkHref === "/" && label === "Home") {
+        navigate("/", { replace: true, state: { videoQuery: "random" } });
+        return;
+      } else if (linkHref === "/" && label === "Entertainment") {
+        navigate("/", {
+          replace: true,
+          state: { videoQuery: "entertainment" },
+        });
+        return;
+      } else if (linkHref === "/" && label === "Gaming") {
+        navigate("/", { replace: true, state: { videoQuery: "gaming" } });
+        return;
+      } else if (linkHref === "/" && label === "Music") {
+        navigate("/", { replace: true, state: { videoQuery: "music" } });
+        return;
+      } else if (linkHref === "/" && label === "Tech") {
+        navigate("/", { replace: true, state: { videoQuery: "tech" } });
+        return;
+      } else if (linkHref === "/" && label === "Education") {
+        navigate("/", { replace: true, state: { videoQuery: "education" } });
+        return;
+      } else if (linkHref === "/" && label === "News") {
+        navigate("/", { replace: true, state: { videoQuery: "news" } });
+        return;
+      } else if (linkHref === "/" && label === "Vlogs") {
+        navigate("/", { replace: true, state: { videoQuery: "vlogs" } });
         return;
       }
 
@@ -332,7 +362,9 @@ export const Navbar08 = React.forwardRef(
                               }}
                               className={cn(
                                 "flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer no-underline",
-                                link.active &&
+                                ((activeQuery === "random" &&
+                                  link.label === "Home") ||
+                                  link.label.toLowerCase() === activeQuery) &&
                                   "bg-accent text-accent-foreground"
                               )}
                             >
@@ -419,11 +451,15 @@ export const Navbar08 = React.forwardRef(
                       <NavigationMenuLink
                         href={link.href}
                         onClick={(e) => {
-                          handleNavItemClickInternal(e, link.href);
+                          handleNavItemClickInternal(e, link.href, link.label);
                         }}
                         className={cn(
                           "text-muted-foreground hover:text-primary py-1.5 font-medium transition-colors cursor-pointer group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                          link.active && "text-primary"
+                          // 1. Check if it's the default 'Home' and activeQuery is 'random'
+                          ((activeQuery === "random" &&
+                            link.label === "Home") || // 2. Check if the link label matches the category query
+                            link.label.toLowerCase() === activeQuery) &&
+                            "text-primary bg-accent/50"
                         )}
                         data-active={link.active}
                       >
