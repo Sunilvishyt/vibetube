@@ -14,6 +14,7 @@ export default function WatchPage() {
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // const [fetchedViews, setFetchedViews] = useState(0);
 
   useEffect(() => {
     if (!id) {
@@ -23,7 +24,23 @@ export default function WatchPage() {
 
     const fetchVideo = async () => {
       setLoading(true);
+
       try {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          navigate("/login", {
+            replace: true,
+            state: {
+              fromWatch: true,
+              errorMessage: "login expired, please login again",
+            },
+          });
+        }
+        await axios.post(
+          "http://localhost:8000/view/",
+          { video_id: id },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         const res = await axios.get(`http://localhost:8000/getvideo/${id}`);
         setVideo(res.data);
         document.title = `${res.data.title} — MySite`;
@@ -61,6 +78,7 @@ export default function WatchPage() {
             <video
               src={video_url}
               controls
+              autoPlay
               className="w-full aspect-video object-contain bg-black"
             />
           </div>

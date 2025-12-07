@@ -248,7 +248,7 @@ const UploadPage = () => {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full relative left-60 top-20 z-50 hover:bg-muted/50 scale-120"
+          className="rounded-full relative left-50 top-20 z-50 hover:bg-muted/50 scale-120"
           onClick={() => navigate("/")}
         >
           <ArrowLeft size={48} />

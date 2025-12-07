@@ -46,6 +46,8 @@ class LikeToggle(BaseModel):
     video_id: int
     type: str  # "like" or "dislike"
 
+class ViewIncrement(BaseModel):
+    video_id: int
 
 class CommentCreate(BaseModel):
     video_id: int

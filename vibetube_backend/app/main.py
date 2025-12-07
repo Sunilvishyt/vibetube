@@ -375,3 +375,41 @@ def search_videos(
         }
         for video in videos
     ]
+
+@app.post('/view')
+def increase_view(data:pydantic_models.ViewIncrement,
+                  db:Session = Depends(get_db),
+                  current_user_id: int = Depends(get_current_user_id)
+):
+    existing = db.query(database_models.View).filter(
+        database_models.View.video_id == data.video_id,
+        database_models.View.user_id == current_user_id
+    ).first()
+
+    if not existing:
+        create_view = database_models.View(
+            user_id = current_user_id,
+            video_id = data.video_id,
+        )
+        db.add(create_view)
+
+        video = db.query(database_models.Video).filter(
+            database_models.Video.id == data.video_id
+        ).first()
+
+        if video:
+            video.views = (video.views or 0) + 1
+            db.commit()
+            return {"msg":"view updated successfully!"}
+
+        else:
+            return {"msg":"video not found"}
+    else:
+        return {"msg":"view already registered!"}
+
+@app.get("/getviews/{video_id}")
+def get_views(video_id: int, db: Session = Depends(get_db)):
+    count = db.query(database_models.View).filter(database_models.View.video_id == video_id).count()
+    return {"count":count}
+
+

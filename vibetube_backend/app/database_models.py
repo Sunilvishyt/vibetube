@@ -22,7 +22,7 @@ class User(Base):
     videos = relationship("Video", back_populates="owner", cascade="all, delete")
     likes = relationship("Like", back_populates="user", cascade="all, delete")
     comments = relationship("Comment", back_populates="user", cascade="all, delete")
-
+    view = relationship("View", back_populates="user", cascade="all, delete")
 
 # ---------------- VIDEOS ----------------
 
@@ -50,6 +50,7 @@ class Video(Base):
     owner = relationship("User", back_populates="videos")
     likes = relationship("Like", back_populates="video", cascade="all, delete")
     comments = relationship("Comment", back_populates="video", cascade="all, delete")
+    view = relationship("View", back_populates="video", cascade="all, delete")
 
 # ---------------- LIKES / DISLIKES ----------------
 
@@ -86,3 +87,16 @@ class Comment(Base):
     user = relationship("User", back_populates="comments")
     video = relationship("Video", back_populates="comments")
 
+#----------------------View---------------------
+
+class View(Base):
+    __tablename__ = "view"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    video_id = Column(Integer, ForeignKey("videos.id", ondelete="CASCADE"))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    #relationship
+    user = relationship("User", back_populates="view")
+    video = relationship("Video", back_populates="view")
