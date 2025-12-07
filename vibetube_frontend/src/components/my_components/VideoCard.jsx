@@ -84,7 +84,7 @@ const VideoCard = ({
 
   return (
     <Link to={`/watch/${id}`} className="block">
-      <Card className="w-61 h-60 p-0 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer bg-background">
+      <Card className="w-59 h-60 p-0 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer bg-background">
         {/* Thumbnail */}
         <CardHeader className="p-0 relative">
           <div className="relative w-full aspect-video ">

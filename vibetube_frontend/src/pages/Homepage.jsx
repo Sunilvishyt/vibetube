@@ -180,7 +180,7 @@ function Homepage() {
       <div className="bg-chart-3 h-fit w-full p-8">
         <h1 className="font-bold size-20 w-full">Recommended for you</h1>
         <div className="flex justify-center w-full">
-          <div className="flex w-[90vw] min-w-[1000px] max-w-[1300px] gap-6 flex-wrap ">
+          <div className="flex w-[85vw] max-w-[1100px] gap-6 flex-wrap ">
             {videos.map((video) => (
               <VideoCard
                 key={video.id}

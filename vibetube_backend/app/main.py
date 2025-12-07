@@ -1,4 +1,3 @@
-from dns.e164 import query
 from fastapi import FastAPI, Depends, HTTPException, status, File, Form, UploadFile, Query
 from fastapi.security import OAuth2PasswordBearer # Tool to extract token from header
 from fastapi.staticfiles import StaticFiles
@@ -369,11 +368,12 @@ def verify_token(db:Session = Depends(get_db),
 @app.get("/search")
 def search_videos(
     query: str = Query(..., min_length=1),
-    page: int = Query(1, ge=1),
-    limit: int = Query(24, le=100),
+    # Change 'page' to 'offset'
+    offset: int = Query(0, ge=0),
+    limit: int = Query(12, le=100), # Change default limit to 12
     db: Session = Depends(get_db),
 ):
-    offset = (page - 1) * limit
+    # Remove the offset calculation: offset = (page - 1) * limit
     like_query = f"%{query}%"
 
     videos = (
@@ -392,7 +392,7 @@ def search_videos(
                 else_=3
     ),
     database_models.Video.views.desc())
-        .offset(offset)
+        .offset(offset) # Use the offset directly
         .limit(limit)
         .all()
     )
@@ -409,6 +409,7 @@ def search_videos(
         }
         for video in videos
     ]
+
 
 @app.post('/view')
 def increase_view(data:pydantic_models.ViewIncrement,
