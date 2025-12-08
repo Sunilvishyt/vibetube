@@ -6,11 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../tooltip";
 import {
   Popover,
   PopoverContent,
@@ -28,6 +38,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Upload } from "lucide-react";
+import MoreButton from "@/components/my_components/MoreButton";
 
 // Simple logo component for the navbar
 const Logo = (props) => {
@@ -316,13 +327,15 @@ export const Navbar08 = React.forwardRef(
       if (onNavItemClick && linkHref) {
         onNavItemClick(linkHref);
       }
-
-      // OPTIONAL: If you want other links (like '#') to also navigate using the router:
-      // if (linkHref && linkHref !== "#") {
-      //     navigate(linkHref);
-      //     return;
-      // }
     };
+
+    const sheetNavLinks = [
+      { name: "🔥 Trending", href: "/trending" },
+      { name: "❤️ Liked Videos", href: "/liked" },
+      { name: "🕒 History", href: "/history" },
+      { name: "ℹ️ About vibetube", href: "/about" },
+    ];
+
     return (
       <header
         ref={combinedRef}
@@ -400,7 +413,7 @@ export const Navbar08 = React.forwardRef(
                 <Input
                   id={searchId}
                   name="search"
-                  className="peer h-8 ps-8 pe-10 w-96 rounded-2xl"
+                  className="peer h-8 ps-8 pe-10  w-96 max-w-110 rounded-2xl"
                   placeholder={searchPlaceholder}
                   type="search"
                 />
@@ -422,14 +435,20 @@ export const Navbar08 = React.forwardRef(
                 notificationCount={notificationCount}
                 onItemClick={onNotificationItemClick}
               /> */}
-              <span title="Upload video">
-                <Upload
-                  size={22}
-                  cursor="pointer"
-                  onClick={() => {
-                    navigate("/upload");
-                  }}
-                />
+              <span className="flex justify-center items-center">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Upload
+                      className="mr-0.5"
+                      size={22}
+                      cursor="pointer"
+                      onClick={() => {
+                        navigate("/upload");
+                      }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>Upload video</TooltipContent>
+                </Tooltip>
               </span>
               {/* User menu */}
               <UserMenu
@@ -442,7 +461,60 @@ export const Navbar08 = React.forwardRef(
           </div>
           {/* Bottom navigation */}
           {!isMobile && (
-            <div className="border-t py-2">
+            <div className="border-t py-2 flex">
+              <div className="pr-14 pl-12 pt-1.5 flex justify-center">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    {/* Using a Menu icon is often better than "More" text for a small button */}
+                    <Button
+                      className="group h-8 w-8 hover:bg-accent hover:text-accent-foreground"
+                      variant="ghost"
+                      size="icon"
+                    >
+                      {/* If using lucide-react, you can use: <Menu className="h-5 w-5" /> */}
+                      <span className="font-bold">
+                        <MoreButton />
+                      </span>{" "}
+                      {/* Placeholder for an icon */}
+                    </Button>
+                  </SheetTrigger>
+                  {/* Adjusted width here: max-w-xs is a common max-width for a sidebar */}
+                  <SheetContent
+                    side="left"
+                    className="w-64 max-w-xs sm:max-w-sm pr-2"
+                  >
+                    <SheetHeader>
+                      <SheetTitle className="text-2xl font-bold border-b pb-2 mb-4">
+                        Navigation
+                      </SheetTitle>
+                      <SheetDescription className="sr-only">
+                        Navigation links for key pages.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="flex flex-col space-y-2 ml-3">
+                      {sheetNavLinks.map((link) => (
+                        // Navigation links with better styling
+                        <a
+                          key={link.name}
+                          href={link.href}
+                          className="
+                  flex items-center 
+                  px-3 py-2 
+                  text-sm font-medium 
+                  rounded-md 
+                  text-foreground 
+                  hover:bg-muted 
+                  transition-colors 
+                  duration-150
+                "
+                        >
+                          {link.name}
+                        </a>
+                      ))}
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
               {/* Navigation menu */}
               <NavigationMenu>
                 <NavigationMenuList className="gap-2">

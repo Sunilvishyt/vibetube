@@ -7,6 +7,7 @@ import UploadPage from "./pages/UploadPage";
 import WatchPage from "./pages/WatchPage";
 import Logout from "./pages/Logout";
 import SearchPage from "./pages/SearchPage";
+import Testpage from "./pages/Testpage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/upload" element={<UploadPage />} />
         <Route path="/watch/:id" element={<WatchPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/testpage" element={<Testpage />} />
       </Routes>
     </>
   );
