@@ -8,6 +8,8 @@ import WatchPage from "./pages/WatchPage";
 import Logout from "./pages/Logout";
 import SearchPage from "./pages/SearchPage";
 import Testpage from "./pages/Testpage";
+import Likedpage from "./pages/Likedpage";
+import Historypage from "./pages/Historypage";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
         <Route path="/upload" element={<UploadPage />} />
         <Route path="/watch/:id" element={<WatchPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/liked" element={<Likedpage />} />
+        <Route path="/history" element={<Historypage />} />
         <Route path="/testpage" element={<Testpage />} />
       </Routes>
     </>

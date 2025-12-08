@@ -1,16 +1,14 @@
+// File: MoreButton.jsx (or wherever NeumorphismButton is defined)
 import { Menu } from "lucide-react";
-const MoreButton = () => {
-  return (
-    <div className="flex items-center justify-center">
-      <NeumorphismButton />
-    </div>
-  );
-};
 
-const NeumorphismButton = () => {
+// --- Fix: Pass props down and use a div/span ---
+const NeumorphismWrapper = (props) => {
+  // Pass all received props to the wrapper element
   return (
-    <button
+    <div
+      {...props} // This spreads all props (including the onClick, aria-controls, etc. from SheetTrigger)
       className={`
+        // Apply your unique Neumorphism styling here:
         px-4 py-[6px] pr-5 rounded-full 
         flex items-center gap-2 
         text-white bg-chart-1
@@ -20,11 +18,22 @@ const NeumorphismButton = () => {
 
         hover:shadow-[-1px_-1px_3px_rgba(255,_255,_255,_0.4),_1px_1px_5px_rgba(0,_0,_0,_0.3),inset_-2px_-2px_5px_rgba(255,_255,_255,_1),inset_2px_2px_4px_rgba(0,_0,_0,_0.3)]
         hover:text-primary hover:bg-background
-    `}
+        // Crucially, append the received className to this class list
+        ${props.className || ""} 
+      `}
     >
-      <Menu />
+      <Menu className="h-4 w-4" /> {/* Added h-4 w-4 for size */}
       <span>More</span>
-    </button>
+    </div>
+  );
+};
+
+const MoreButton = (props) => {
+  // Pass props down to the wrapper
+  return (
+    <div className="flex items-center justify-center">
+      <NeumorphismWrapper {...props} />
+    </div>
   );
 };
 

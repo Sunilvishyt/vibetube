@@ -37,7 +37,7 @@ export default function WatchPage() {
           });
         }
         await axios.post(
-          "http://localhost:8000/view/",
+          "http://localhost:8000/view",
           { video_id: id },
           { headers: { Authorization: `Bearer ${token}` } }
         );

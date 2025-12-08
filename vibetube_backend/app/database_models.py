@@ -1,6 +1,6 @@
 from database import Base
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text, UniqueConstraint
 from sqlalchemy.sql import func
 
 # ---------------- USER = CHANNEL ----------------
@@ -96,6 +96,10 @@ class View(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     video_id = Column(Integer, ForeignKey("videos.id", ondelete="CASCADE"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'video_id', name='_user_video_uc'),
+    )
 
     #relationship
     user = relationship("User", back_populates="view")

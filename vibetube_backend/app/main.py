@@ -2,10 +2,11 @@ from fastapi import FastAPI, Depends, HTTPException, status, File, Form, UploadF
 from fastapi.security import OAuth2PasswordBearer # Tool to extract token from header
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.sql.expression import func
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, case
+from sqlalchemy import or_, case, update
 from database import get_db
 import bcrypt
 import pydantic_models
@@ -193,15 +194,17 @@ def get_videos(
         vid_query: str,
         limit: int = Query(DEFAULT_VIDEO_LIMIT, ge=1, le=50),  # Max 50 per request
         offset: int = Query(0, ge=0),
-        db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
+        current_user_id : int = Depends(get_current_user_id)
 ):
     """
     Fetches videos with pagination using limit and offset.
     """
-    VALID_CATEGORIES = {"music", "movies", "gaming", "anime", "education", "entertainment", "tech", "news", "vlogs"}
+    VALID_CATEGORIES = {"music", "movies", "gaming", "anime", "education", "entertainment", "tech", "news", "vlogs","trending", "liked", "history"}
 
     if vid_query != "random" and vid_query not in VALID_CATEGORIES:
         raise HTTPException(400, "Invalid category")
+
 
     # Base query
     basequery = db.query(database_models.Video)
@@ -211,6 +214,27 @@ def get_videos(
         videos = (
             basequery.order_by(func.random()).offset(offset).limit(limit).all()
         )
+    elif vid_query == "liked":
+        # Liked videos: Filter by liked, then apply limit and offset
+        videos = (
+            basequery
+            .filter(database_models.Video.id == database_models.Like.video_id, database_models.Like.user_id == current_user_id)
+            .order_by(database_models.Video.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+    elif vid_query == "history":
+        # History videos: Filter by history, then apply limit and offset
+        videos = (
+            basequery
+            .filter(database_models.Video.id == database_models.View.video_id, database_models.View.user_id == current_user_id)
+            .order_by(database_models.View.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+
     else:
         # Category videos: Filter by category, then apply limit and offset
         videos = (
@@ -421,28 +445,47 @@ def increase_view(data:pydantic_models.ViewIncrement,
         database_models.View.user_id == current_user_id
     ).first()
 
-    if not existing:
-        create_view = database_models.View(
-            user_id = current_user_id,
-            video_id = data.video_id,
-        )
-        db.add(create_view)
+    if existing:
+        # Handle update logic as you had before
+        existing.created_at = func.now()
+        db.commit()
+        return {"msg": "View timestamp updated."}
 
-        video = db.query(database_models.Video).filter(
-            database_models.Video.id == data.video_id
-        ).first()
-
-        if video:
-            video.views = (video.views or 0) + 1
-            db.commit()
-            return {"msg":"view updated successfully!"}
-
-        else:
-            return {"msg":"video not found"}
     else:
-        return {"msg":"view already registered!"}
+        db.execute(
+            update(database_models.Video)
+            .where(database_models.Video.id == data.video_id)
+            .values(views=database_models.Video.views + 1)
+        )
 
+        # 3B. Attempt to create the new View record
+        new_view = database_models.View(
+            user_id=current_user_id,
+            video_id=data.video_id,
+        )
+        db.add(new_view)
+        
+        try:
+            db.commit() # Attempt to commit the new view and the video view count update
+            return {"msg": "New view recorded and count incremented."}, status.HTTP_201_CREATED
+        
+        except IntegrityError:
+            # This occurs if the unique constraint is violated (i.e., the other request beat this one)
+            db.rollback() # Rollback the failed insert attempt
+            
+            # Now, fetch the existing view (created by the *other* request)
+            existing_view_after_race = db.query(database_models.View).filter(
+                database_models.View.video_id == data.video_id,
+                database_models.View.user_id == current_user_id
+            ).first()
 
-
+            # Update its timestamp
+            if existing_view_after_race:
+                existing_view_after_race.created_at = func.now()
+                db.commit()
+                return {"msg": "Race condition detected and fixed: View timestamp updated."}
+            else:
+                # Should not happen, but good practice
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database error during race condition handling.")
 
 

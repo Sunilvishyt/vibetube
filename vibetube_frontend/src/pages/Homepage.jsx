@@ -8,6 +8,7 @@ import axios from "axios";
 import { toast, Toaster } from "sonner";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BlurText from "@/components/ui/shadcn-io/blur-text";
 
 const VIDEOS_PER_PAGE = 12;
 function Homepage() {
@@ -74,9 +75,14 @@ function Homepage() {
     setIsLoading(true); // Start loading
 
     try {
-      // 💡 Construct the URL with query parameters for limit and offset
+      const token = localStorage.getItem("access_token");
       const response = await axios.get(
-        `http://localhost:8000/getvideos/${query}?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}`
+        `http://localhost:8000/getvideos/${query}?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       const newVideos = response.data;
@@ -178,7 +184,11 @@ function Homepage() {
       <Navbar userName={username} userEmail={email} />
       <hr />
       <div className="bg-chart-3 h-fit w-full p-8">
-        <h1 className="font-bold size-20 w-full">Recommended for you</h1>
+        <BlurText
+          className="font-bold size-18 text-2xl w-full"
+          text="Recommended for you"
+          stepDuration="0.5"
+        />
         <div className="flex justify-center w-full">
           <div className="flex w-[85vw] max-w-[1100px] gap-6 flex-wrap ">
             {videos.map((video) => (
