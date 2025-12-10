@@ -16,6 +16,7 @@ import os, shutil
 from dotenv import load_dotenv
 from typing import Annotated
 from jose import jwt, JWTError
+from typing import Optional
 import uuid
 
 load_dotenv()
@@ -194,6 +195,7 @@ def get_videos(
         vid_query: str,
         limit: int = Query(DEFAULT_VIDEO_LIMIT, ge=1, le=50),  # Max 50 per request
         offset: int = Query(0, ge=0),
+        exclude_ids: Optional[str] = Query(None),
         db: Session = Depends(get_db),
         current_user_id : int = Depends(get_current_user_id)
 ):
@@ -206,19 +208,32 @@ def get_videos(
         raise HTTPException(400, "Invalid category")
 
 
+    if exclude_ids:
+        try:
+            exclude_ids_list = [int(x) for x in exclude_ids.split(",") if x.strip()]
+        except ValueError:
+            raise HTTPException(400, "exclude_ids must be integers")
+    else:
+        exclude_ids_list = []
+
     # Base query
     basequery = db.query(database_models.Video)
 
+    if exclude_ids_list:
+        basequery = basequery.filter(database_models.Video.id.notin_(exclude_ids_list))
+    
     if vid_query == "random":
         # Random videos: Apply ordering, limit, and offset
         videos = (
-            basequery.order_by(func.random()).offset(offset).limit(limit).all()
+            basequery.order_by(func.random()).limit(limit).all()
         )
     elif vid_query == "liked":
         # Liked videos: Filter by liked, then apply limit and offset
         videos = (
             basequery
-            .filter(database_models.Video.id == database_models.Like.video_id, database_models.Like.user_id == current_user_id)
+            .join(database_models.Like, database_models.Like.video_id == database_models.Video.id)
+            .filter(database_models.Like.user_id == current_user_id)
+            .filter(database_models.Video.id.notin_(exclude_ids_list))
             .order_by(database_models.Video.created_at.desc())
             .offset(offset)
             .limit(limit)
@@ -228,7 +243,9 @@ def get_videos(
         # History videos: Filter by history, then apply limit and offset
         videos = (
             basequery
-            .filter(database_models.Video.id == database_models.View.video_id, database_models.View.user_id == current_user_id)
+            .join(database_models.View, database_models.View.video_id == database_models.Video.id)
+            .filter(database_models.View.user_id == current_user_id)
+            .filter(database_models.Video.id.notin_(exclude_ids_list))
             .order_by(database_models.View.created_at.desc())
             .offset(offset)
             .limit(limit)

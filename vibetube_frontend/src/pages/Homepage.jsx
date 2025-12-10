@@ -21,6 +21,8 @@ function Homepage() {
   const [offset, setOffset] = useState(0);
   // 💡 NEW STATE: Track if there are more videos to load (if the last fetch returned less than limit)
   const [hasMore, setHasMore] = useState(true);
+  const [sentVideoIds, setSentVideoIds] = useState(new Set());
+
   // 💡 NEW STATE: Track the currently active category/query
   const [currentQuery, setCurrentQuery] = useState(
     location.state?.videoQuery || "random"
@@ -76,8 +78,9 @@ function Homepage() {
 
     try {
       const token = localStorage.getItem("access_token");
+      const excludeParam = Array.from(sentVideoIds).join(",");
       const response = await axios.get(
-        `http://localhost:8000/getvideos/${query}?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}`,
+        `http://localhost:8000/getvideos/${query}?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&exclude_ids=${excludeParam}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -94,6 +97,13 @@ function Homepage() {
 
       // 💡 Update offset for the next request
       setOffset(fetchOffset + newVideos.length);
+
+      // Update the sentVideoIds Set
+      setSentVideoIds((prevIds) => {
+        const updated = new Set(prevIds);
+        newVideos.forEach((v) => updated.add(v.id));
+        return updated;
+      });
 
       // 💡 Check if we received less than the requested limit, which means no more data
       setHasMore(newVideos.length === VIDEOS_PER_PAGE);
@@ -168,13 +178,22 @@ function Homepage() {
   }, [location.state?.successMessage, location.pathname, navigate]);
 
   function formatTimeAgo(timestamp) {
-    // 1. Parse the ISO string into a JavaScript Date object
     const date = parseISO(timestamp);
+    const now = new Date();
+    const diffMs = now - date; // difference in milliseconds
 
-    // 2. Calculate the distance from this date to the current time (Now)
-    // The 'addSuffix: true' option adds "ago" or "from now".
-    const result = formatDistanceToNow(date, { addSuffix: true });
-    return result;
+    const seconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(diffMs / (1000 * 60));
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (seconds < 60) return "just now";
+    if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
+
+    // fallback to formatDistanceToNow for weeks, months, years
+    return formatDistanceToNow(date, { addSuffix: true });
   }
 
   return (
