@@ -78,7 +78,7 @@ function Homepage() {
 
     try {
       const token = localStorage.getItem("access_token");
-      const excludeParam = Array.from(sentVideoIds).join(",");
+      let excludeParam = Array.from(sentVideoIds).join(",");
       const response = await axios.get(
         `http://localhost:8000/getvideos/${query}?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&exclude_ids=${excludeParam}`,
         {
@@ -87,7 +87,6 @@ function Homepage() {
           },
         }
       );
-
       const newVideos = response.data;
 
       // 💡 Update video state: APPEND if loading more, REPLACE if a new category
@@ -129,6 +128,7 @@ function Homepage() {
           setOffset(0);
           setHasMore(true);
           setCurrentQuery(vidQuery); // Update tracking query
+          setSentVideoIds(new Set());
 
           // Fetch the first batch for the new category (offset 0)
           fetchVideos(vidQuery, 0, false);
