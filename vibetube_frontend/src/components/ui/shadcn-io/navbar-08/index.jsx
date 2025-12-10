@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { Upload } from "lucide-react";
 import MoreButton from "@/components/my_components/MoreButton";
 import { Themetoggle } from "@/components/my_components/Themetoggle";
+import { ThemeToggleButton } from "../theme-toggle-button";
 
 // Simple logo component for the navbar
 const Logo = (props) => {
@@ -430,24 +431,31 @@ export const Navbar08 = React.forwardRef(
             </div>
 
             {/* Right side */}
-            <div className="flex flex-1 items-center justify-end gap-2">
+            <div className="flex flex-1 items-center justify-end gap-1">
               {/* Notification
               <NotificationMenu
                 notificationCount={notificationCount}
                 onItemClick={onNotificationItemClick}
               /> */}
-              <Themetoggle />
+              <span>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Themetoggle />
+                  </TooltipTrigger>
+                  <TooltipContent>Toggle theme</TooltipContent>
+                </Tooltip>
+              </span>
               <span className="flex justify-center items-center">
                 <Tooltip>
                   <TooltipTrigger>
-                    <Upload
-                      className="mr-0.5"
-                      size={22}
-                      cursor="pointer"
+                    <Button
+                      variant="ghost"
                       onClick={() => {
                         navigate("/upload");
                       }}
-                    />
+                    >
+                      <Upload cursor="pointer" />
+                    </Button>
                   </TooltipTrigger>
                   <TooltipContent>Upload video</TooltipContent>
                 </Tooltip>
