@@ -117,7 +117,7 @@ const VideoCard = ({
           <div className="flex-1 min-w-0">
             {/* Title and Options Menu */}
             <div className="flex justify-between items-start -mt-1 -mr-2">
-              <h3 className="font-semibold text-sm leading-snug line-clamp-2 text-white pr-1">
+              <h3 className="font-semibold text-sm leading-snug line-clamp-2 text-accent-foreground pr-1">
                 {title}
               </h3>
               {/* Options Menu Icon */}

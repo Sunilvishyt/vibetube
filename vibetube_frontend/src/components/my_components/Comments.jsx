@@ -53,7 +53,7 @@ export default function Comments({ videoId }) {
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 p-2 border rounded w-full bg-input mb-1 text-amber-50"
+          className="flex-1 p-2 border rounded w-full bg-input mb-1 text-accent-foreground"
           rows={2}
           placeholder="Add a public comment..."
         />

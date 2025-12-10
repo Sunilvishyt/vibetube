@@ -39,6 +39,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Upload } from "lucide-react";
 import MoreButton from "@/components/my_components/MoreButton";
+import { Themetoggle } from "@/components/my_components/Themetoggle";
 
 // Simple logo component for the navbar
 const Logo = (props) => {
@@ -435,6 +436,7 @@ export const Navbar08 = React.forwardRef(
                 notificationCount={notificationCount}
                 onItemClick={onNotificationItemClick}
               /> */}
+              <Themetoggle />
               <span className="flex justify-center items-center">
                 <Tooltip>
                   <TooltipTrigger>

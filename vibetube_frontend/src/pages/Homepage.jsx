@@ -203,7 +203,6 @@ function Homepage() {
   return (
     <>
       <Toaster position="bottom-right" richColors />
-
       <Navbar userName={username} userEmail={email} />
       <hr />
       <div className="bg-chart-3 h-fit w-full p-8">
