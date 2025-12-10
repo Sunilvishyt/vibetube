@@ -17,6 +17,8 @@ from dotenv import load_dotenv
 from typing import Annotated
 from jose import jwt, JWTError
 from typing import Optional
+from PIL import Image
+from io import BytesIO
 import uuid
 
 load_dotenv()
@@ -41,6 +43,9 @@ app.mount("/thumbnails", StaticFiles(directory="storage/thumbnails"), name="thum
 
 VIDEO_DIR = "storage/videos"
 THUMB_DIR = "storage/thumbnails"
+THUMB_WIDTH = 320 # Standard thumbnail width
+THUMB_HEIGHT = 180 # Standard thumbnail height
+THUMB_QUALITY = 85 # JPEG quality for compression
 
 os.makedirs(VIDEO_DIR, exist_ok=True)
 os.makedirs(THUMB_DIR, exist_ok=True)
@@ -153,7 +158,7 @@ async def upload_video(
         raise HTTPException(status_code=400, detail="Invalid thumbnail format")
 
     video_extension = os.path.splitext(video.filename)[1]  # e.g., .mp4
-    thumb_extension = os.path.splitext(thumbnail.filename)[1]  # e.g., .jpg
+    thumb_extension = ".webp"
 
     video_filename = f"{uuid.uuid4()}{video_extension}"  # e.g., d9e1c52a-9d5c-4a91-bf1f-a3003c12a92f.mp4
     thumb_filename = f"{uuid.uuid4()}{thumb_extension}"
@@ -166,8 +171,24 @@ async def upload_video(
         shutil.copyfileobj(video.file, buffer)
 
     # Save thumbnail
-    with open(thumb_path, "wb") as buffer:
-        shutil.copyfileobj(thumbnail.file, buffer)
+    try:
+        thumb_content = await thumbnail.read()
+        img = Image.open(BytesIO(thumb_content))
+
+        # Convert to RGB (required for saving as JPEG/WEBP in some cases)
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+        
+        # Resize the image 
+        img.thumbnail((THUMB_WIDTH, THUMB_HEIGHT)) # Preserves aspect ratio
+
+        # Save the optimized image to the target path
+        img.save(thumb_path, format="WEBP", quality=THUMB_QUALITY) 
+        
+    except Exception as e: #if thumbnail fails videos gets deleted too.
+        if os.path.exists(video_path):
+            os.remove(video_path)
+        raise HTTPException(status_code=500, detail=f"Failed to process or save thumbnail: {e}")
 
     #fetch username
     user = db.query(database_models.User).filter_by(id=current_user_id).first()
@@ -207,45 +228,40 @@ def get_videos(
     if vid_query != "random" and vid_query not in VALID_CATEGORIES:
         raise HTTPException(400, "Invalid category")
 
-
-    if exclude_ids:
-        try:
-            exclude_ids_list = [int(x) for x in exclude_ids.split(",") if x.strip()]
-        except ValueError:
-            raise HTTPException(400, "exclude_ids must be integers")
-    else:
-        exclude_ids_list = []
-
     # Base query
     basequery = db.query(database_models.Video)
+    exclude_ids_list = []
 
-    if exclude_ids_list:
-        basequery = basequery.filter(database_models.Video.id.notin_(exclude_ids_list))
-    
     if vid_query == "random":
-        # Random videos: Apply ordering, limit, and offset
+        if exclude_ids:
+            try:
+                exclude_ids_list = [int(x) for x in exclude_ids.split(",") if x.strip()]
+            except ValueError:
+                raise HTTPException(400, "exclude_ids must be integers")
+            
+            if exclude_ids_list:
+                basequery = basequery.filter(database_models.Video.id.notin_(exclude_ids_list))
+                
         videos = (
             basequery.order_by(func.random()).limit(limit).all()
         )
+
     elif vid_query == "liked":
-        # Liked videos: Filter by liked, then apply limit and offset
         videos = (
             basequery
             .join(database_models.Like, database_models.Like.video_id == database_models.Video.id)
             .filter(database_models.Like.user_id == current_user_id)
-            .filter(database_models.Video.id.notin_(exclude_ids_list))
             .order_by(database_models.Video.created_at.desc())
             .offset(offset)
             .limit(limit)
             .all()
         )
+
     elif vid_query == "history":
-        # History videos: Filter by history, then apply limit and offset
         videos = (
             basequery
             .join(database_models.View, database_models.View.video_id == database_models.Video.id)
             .filter(database_models.View.user_id == current_user_id)
-            .filter(database_models.Video.id.notin_(exclude_ids_list))
             .order_by(database_models.View.created_at.desc())
             .offset(offset)
             .limit(limit)
@@ -272,7 +288,6 @@ def get_videos(
         )
 
     else:
-        # Category videos: Filter by category, then apply limit and offset
         videos = (
             basequery
             .filter(database_models.Video.category == vid_query)
@@ -284,44 +299,12 @@ def get_videos(
         )
     return videos
 
-"""
-Response body
-Download
-[
-  {
-    "title": "string",
-    "description": "string",
-    "visibility": "public",
-    "category": "string",
-    "id": 1,
-    "user_id": 1,
-    "video_url": "http://127.0.0.1:8000/videos/7f10f866-20c9-4062-b935-58698ef45c1b.mp4",
-    "thumbnail_url": "http://127.0.0.1:8000/thumbnails/a0973665-3080-496e-a0dd-45afdeeca3cb.png",
-    "views": 0,
-    "created_at": "2025-12-04T07:56:35"
-  },
-  {
-    "title": "string",
-    "description": "string",
-    "visibility": "public",
-    "category": "string",
-    "id": 2,
-    "user_id": 1,
-    "video_url": "http://127.0.0.1:8000/videos/fdbb6e42-a784-43ee-ae03-7cfaf3ee85c6.mp4",
-    "thumbnail_url": "http://127.0.0.1:8000/thumbnails/7abc306c-b144-46d5-aed2-f9b0b3173a5c.png",
-    "views": 0,
-    "created_at": "2025-12-04T07:57:00"
-  }
-]
-"""
-
 @app.get("/getvideo/{video_id}", response_model=pydantic_models.VideoOut)
 def get_single_video(video_id: int, db: Session = Depends(get_db)):
     video = db.query(database_models.Video).filter_by(id = video_id).first()
     if not video:
         raise HTTPException(status_code=404, detail="Video not found")
     return video
-
 
 @app.post("/like")
 def like_video(data: pydantic_models.LikeToggle,
@@ -360,8 +343,6 @@ def get_like_count(video_id: int, db: Session = Depends(get_db), current_user_id
         return {"liked": "true", "likes": count}
     else:
         return {"liked": "false", "likes": count}
-
-
 
 @app.post("/comment", response_model=pydantic_models.CommentOut)
 def create_comment(data: pydantic_models.CommentCreate,
@@ -482,7 +463,6 @@ def increase_view(data:pydantic_models.ViewIncrement,
     ).first()
 
     if existing:
-        # Handle update logic as you had before
         existing.created_at = func.now()
         db.commit()
         return {"msg": "View timestamp updated."}
@@ -494,7 +474,6 @@ def increase_view(data:pydantic_models.ViewIncrement,
             .values(views=database_models.Video.views + 1)
         )
 
-        # 3B. Attempt to create the new View record
         new_view = database_models.View(
             user_id=current_user_id,
             video_id=data.video_id,
@@ -502,7 +481,7 @@ def increase_view(data:pydantic_models.ViewIncrement,
         db.add(new_view)
         
         try:
-            db.commit() # Attempt to commit the new view and the video view count update
+            db.commit() 
             return {"msg": "New view recorded and count incremented."}, status.HTTP_201_CREATED
         
         except IntegrityError:
