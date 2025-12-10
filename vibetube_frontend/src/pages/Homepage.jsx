@@ -27,6 +27,9 @@ function Homepage() {
   const [currentQuery, setCurrentQuery] = useState(
     location.state?.videoQuery || "random"
   );
+  const [whichPage, setWhichPage] = useState(
+    location.state?.whichPage || "For Your Vibe"
+  );
   // 💡 NEW STATE: Loading state for the Load More button
   const [isLoading, setIsLoading] = useState(false);
 
@@ -121,6 +124,7 @@ function Homepage() {
 
       if (isAuthenticated) {
         const vidQuery = location.state?.videoQuery || "random";
+        setWhichPage(location.state?.whichPage || "For Your Vibe");
 
         if (vidQuery !== currentQuery) {
           // Reset pagination state for a new category
@@ -204,8 +208,8 @@ function Homepage() {
       <hr />
       <div className="bg-chart-3 h-fit w-full p-8">
         <BlurText
-          className="font-bold size-18 text-2xl w-full"
-          text="Recommended for you"
+          className="font-bold size-18 text-3xl w-full ml-2"
+          text={whichPage}
           stepDuration="0.5"
         />
         <div className="flex justify-center w-full">

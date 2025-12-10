@@ -9,6 +9,7 @@ function Likedpage() {
     navigate("/", {
       state: {
         videoQuery: "liked",
+        whichPage: "Your Vibe Picks",
       },
     });
   });

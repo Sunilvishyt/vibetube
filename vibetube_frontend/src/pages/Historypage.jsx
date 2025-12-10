@@ -9,6 +9,7 @@ function Historypage() {
     navigate("/", {
       state: {
         videoQuery: "history",
+        whichPage: "Your Vibe Trail",
       },
     });
   });

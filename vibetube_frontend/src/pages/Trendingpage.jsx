@@ -9,6 +9,7 @@ function Trendingpage() {
     navigate("/", {
       state: {
         videoQuery: "trending",
+        whichPage: "Trending Vibes",
       },
     });
   });
