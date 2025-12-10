@@ -10,6 +10,7 @@ import SearchPage from "./pages/SearchPage";
 import Testpage from "./pages/Testpage";
 import Likedpage from "./pages/Likedpage";
 import Historypage from "./pages/Historypage";
+import Trendingpage from "./pages/Trendingpage";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/liked" element={<Likedpage />} />
         <Route path="/history" element={<Historypage />} />
+        <Route path="/trending" element={<Trendingpage />} />
         <Route path="/testpage" element={<Testpage />} />
       </Routes>
     </>

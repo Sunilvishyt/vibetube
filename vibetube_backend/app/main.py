@@ -252,6 +252,25 @@ def get_videos(
             .all()
         )
 
+    elif vid_query == "trending":
+        current_time = datetime.utcnow()
+
+        # compute age in hours
+        age_hours = func.extract(
+            'epoch', current_time - database_models.Video.created_at
+        ) / 3600.0
+
+        # trend score formula
+        trend_score = database_models.Video.views / func.pow(age_hours + 2, 1.2)
+
+        videos = (
+            basequery
+            .order_by(trend_score.desc())
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+
     else:
         # Category videos: Filter by category, then apply limit and offset
         videos = (
