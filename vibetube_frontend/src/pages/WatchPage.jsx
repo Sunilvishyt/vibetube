@@ -6,6 +6,7 @@ import { formatDistanceToNow, parseISO } from "date-fns";
 
 import Comments from "@/components/my_components/Comments";
 import LikeButton from "@/components/my_components/LikeButton";
+import Subscribebutton from "@/components/my_components/Subscribebutton";
 
 export default function WatchPage() {
   const { id } = useParams();
@@ -63,7 +64,15 @@ export default function WatchPage() {
   if (error) return <div className="p-8 text-destructive">{error}</div>;
   if (!video) return null;
 
-  const { title, description, video_url, views, created_at, username } = video;
+  const {
+    title,
+    description,
+    user_id,
+    video_url,
+    views,
+    created_at,
+    username,
+  } = video;
 
   const handleCopyLink = async () => {
     try {
@@ -98,7 +107,6 @@ export default function WatchPage() {
                   alt={username}
                   className="h-10 w-10 rounded-full object-cover"
                 />
-
                 <div>
                   <div className="font-medium text-foreground">{username}</div>
                   <div className="text-xs text-muted-foreground">
@@ -108,6 +116,7 @@ export default function WatchPage() {
                     })}
                   </div>
                 </div>
+                <Subscribebutton channelId={user_id} />
               </div>
 
               <div className="flex items-center gap-3">

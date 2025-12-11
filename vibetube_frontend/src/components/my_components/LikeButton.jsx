@@ -106,8 +106,8 @@ export default function LikeButton({ videoId }) {
 
   // Determine button appearance using Tailwind classes
   const buttonClasses = liked
-    ? "bg-primary text-white border-blue-600 hover:bg-blue-700"
-    : "bg-gray-700 text-gray-200 border-gray-700 hover:bg-gray-600";
+    ? "bg-primary text-white border-blue-600 hover:bg-primary/80"
+    : "bg-muted text-gray-200 border-gray-700 hover:bg-gray-800";
 
   return (
     <button

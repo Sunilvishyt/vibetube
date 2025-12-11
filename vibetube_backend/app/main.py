@@ -374,7 +374,10 @@ def like_video(data: pydantic_models.LikeToggle,
 
 
 @app.get("/likes/{video_id}")
-def get_like_count(video_id: int, db: Session = Depends(get_db), current_user_id:int = Depends(get_current_user_id)):
+def get_like_count(video_id: int, 
+                   db: Session = Depends(get_db), 
+                   current_user_id:int = Depends(get_current_user_id)
+                   ):
     count = db.query(database_models.Like).filter(database_models.Like.video_id == video_id).count()
     user_liked = db.query(database_models.Like).filter(
         database_models.Like.video_id == video_id,
@@ -545,3 +548,47 @@ def increase_view(data:pydantic_models.ViewIncrement,
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database error during race condition handling.")
 
 
+@app.post("/subscribe")
+def subscribe_to_channel(data: pydantic_models.SubscribeToggle, 
+                         db: Session = Depends(get_db), 
+                         current_user_id: int = Depends(get_current_user_id)
+                         ):
+    if data.user_id == current_user_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You cannot subscribe to yourself")
+    existing = db.query(database_models.Subscription).filter(
+        database_models.Subscription.channel_id == data.user_id,
+        database_models.Subscription.user_id == current_user_id
+    ).first()
+
+    if existing:
+        db.delete(existing)
+        db.commit()
+        return {"message": "Removed"}
+
+    new_subscribe = database_models.Subscription(
+        channel_id=data.user_id,
+        user_id=current_user_id,
+    )
+
+    db.add(new_subscribe)
+    db.commit()
+    return {"message": "Added"}
+
+
+@app.get("/subscribers/{channel_id}")
+def get_subscribers(channel_id:int, 
+                    db:Session = Depends(get_db),
+                    current_user_id: int = Depends(get_current_user_id)
+                    ):
+
+    subscribers_count = db.query(database_models.Subscription).filter(database_models.Subscription.channel_id == channel_id).count()
+
+    subscribed = db.query(database_models.Subscription).filter(
+        database_models.Subscription.channel_id == channel_id, 
+        database_models.Subscription.user_id == current_user_id
+        ).first()
+    owner_watching = channel_id == current_user_id
+    if subscribed:
+        return {"subscribed": "true", "subscribers": subscribers_count, "owner_watching": str(owner_watching)}
+    else:
+        return {"subscribed": "false", "subscribers": subscribers_count, "owner_watching": str(owner_watching)}

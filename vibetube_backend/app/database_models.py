@@ -1,6 +1,6 @@
 from database import Base
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text, UniqueConstraint
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text, UniqueConstraint, CheckConstraint
 from sqlalchemy.sql import func
 
 # ---------------- USER = CHANNEL ----------------
@@ -23,6 +23,20 @@ class User(Base):
     likes = relationship("Like", back_populates="user", cascade="all, delete")
     comments = relationship("Comment", back_populates="user", cascade="all, delete")
     view = relationship("View", back_populates="user", cascade="all, delete")
+    subscriptions_made = relationship(
+        "Subscription",
+        back_populates="user",
+        foreign_keys="[Subscription.user_id]", # <-- Explicitly defines the join column
+        cascade="all, delete"
+    )
+
+    # 2. Subscriptions WHERE this user is the CHANNEL being followed (user is the SUBSCRIBED)
+    subscribers = relationship(
+        "Subscription",
+        back_populates="channel",
+        foreign_keys="[Subscription.channel_id]", # <-- Explicitly defines the join column
+        cascade="all, delete"
+    )
 
 # ---------------- VIDEOS ----------------
 
@@ -104,3 +118,24 @@ class View(Base):
     #relationship
     user = relationship("User", back_populates="view")
     video = relationship("Video", back_populates="view")
+
+
+class Subscription(Base):
+    __tablename__ = "subscriptions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    channel_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'channel_id', name='_user_subscriber_uc'),
+        CheckConstraint('user_id != channel_id', name='check_no_self_subscribe')
+    )
+
+    #relationship
+    # Relationship to the SUBSCRIBER (the one who clicked follow)
+    user = relationship("User", back_populates="subscriptions_made", foreign_keys=[user_id])
+    
+    # Relationship to the CHANNEL (the one being followed)
+    channel = relationship("User", back_populates="subscribers", foreign_keys=[channel_id])
