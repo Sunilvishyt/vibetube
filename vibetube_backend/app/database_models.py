@@ -43,7 +43,7 @@ class Video(Base):
     category = Column(String(50), nullable=True)
 
     views = Column(Integer, default=0)
-
+    duration = Column(String(10), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships

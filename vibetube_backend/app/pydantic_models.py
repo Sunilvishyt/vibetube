@@ -35,6 +35,7 @@ class VideoOut(VideoCreate):
     thumbnail_url: str
     views: int
     created_at: datetime
+    duration: str
 
     class Config:
         from_attributes = True

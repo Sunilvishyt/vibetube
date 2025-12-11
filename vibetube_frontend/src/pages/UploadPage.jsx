@@ -102,7 +102,6 @@ const UploadPage = () => {
       // 3. Send the request
       const response = await fetch(UPLOAD_URL, {
         method: "POST",
-        // CRITICAL: Do NOT set Content-Type header. Browser handles multipart/form-data boundary.
         body: formData,
         headers: headers,
       });

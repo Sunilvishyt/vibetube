@@ -19,6 +19,8 @@ from jose import jwt, JWTError
 from typing import Optional
 from PIL import Image
 from io import BytesIO
+import subprocess
+import json
 import uuid
 
 load_dotenv()
@@ -87,7 +89,36 @@ async def get_current_user_id(
         # If decoding fails (wrong key, expired token, etc.)
         raise credentials_exception
 
+def format_duration(seconds: float) -> str:
+    total_seconds = int(seconds)
+    minutes = total_seconds // 60
+    secs = total_seconds % 60
+    return f"{minutes:02d}:{secs:02d}"
 
+def get_video_duration(file_path: str) -> str:
+    try:
+        result = subprocess.run(
+            [
+                "ffprobe",
+                "-v", "error",
+                "-show_entries", "format=duration",
+                "-of", "json",
+                file_path
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        data = json.loads(result.stdout)
+        duration_float = float(data["format"]["duration"])
+        return format_duration(duration_float)
+
+    except Exception as e:
+        # Don't hide errors silently. Fail loudly so you know what's wrong.
+        raise RuntimeError(f"Failed to read duration: {e}")
+
+    
 @app.post('/register')
 def create_user(user_details: pydantic_models.UserCreate, db: Session = Depends(get_db)):
     user_exists = db.query(database_models.User).filter_by(
@@ -170,6 +201,13 @@ async def upload_video(
     with open(video_path, "wb") as buffer:
         shutil.copyfileobj(video.file, buffer)
 
+    # Extract duration
+    duration = get_video_duration(video_path)
+    if duration == 0:
+    # If metadata can't be read, delete file and abort
+        os.remove(video_path)
+        raise HTTPException(status_code=500, detail="Could not extract video duration.")
+
     # Save thumbnail
     try:
         thumb_content = await thumbnail.read()
@@ -199,6 +237,7 @@ async def upload_video(
         username=user.username,
         video_url=f"http://127.0.0.1:8000/videos/{video_filename}",
         thumbnail_url=f"http://127.0.0.1:8000/thumbnails/{thumb_filename}",
+        duration=duration,
         title=title,
         description=description,
         category=category
@@ -272,12 +311,14 @@ def get_videos(
         current_time = datetime.utcnow()
 
         # compute age in hours
-        age_hours = func.extract(
-            'epoch', current_time - database_models.Video.created_at
-        ) / 3600.0
+        age_hours = func.greatest(
+            func.extract('epoch', current_time - database_models.Video.created_at) / 3600.0,
+            0.0
+        )
 
         # trend score formula
         trend_score = database_models.Video.views / func.pow(age_hours + 2, 1.2)
+
 
         videos = (
             basequery

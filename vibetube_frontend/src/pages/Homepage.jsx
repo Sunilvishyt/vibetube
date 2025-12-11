@@ -218,7 +218,7 @@ function Homepage() {
                 key={video.id}
                 id={video.id}
                 thumbnail={video.thumbnail_url}
-                duration="5:00"
+                duration={video.duration}
                 title={video.title}
                 channelName={video.username}
                 channelAvatar="https://picsum.photos/100"
