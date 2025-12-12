@@ -108,7 +108,9 @@ export default function WatchPage() {
                   className="h-10 w-10 rounded-full object-cover"
                 />
                 <div>
-                  <div className="font-medium text-foreground">{username}</div>
+                  <div className="font-black text-foreground/80">
+                    {username}
+                  </div>
                   <div className="text-xs text-muted-foreground">
                     {views} views •{" "}
                     {formatDistanceToNow(parseISO(created_at), {
@@ -139,7 +141,7 @@ export default function WatchPage() {
 
         {/* RIGHT: Comments ONLY */}
         <div className="lg:col-span-1">
-          <div className="bg-card border border-border rounded-lg shadow-sm p-4 h-full overflow-y-auto max-h-[80vh]">
+          <div className="bg-card border border-border rounded-lg shadow-sm p-4 h-full overflow-y-auto max-h-[100vh]">
             <Comments videoId={id} />
           </div>
         </div>

@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { parseISO } from "date-fns/parseISO";
+import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 
 export default function Comments({ videoId }) {
   const [comments, setComments] = useState([]);
@@ -47,6 +49,11 @@ export default function Comments({ videoId }) {
     }
   }
 
+  const formatdatetime = (datetime) => {
+    const data = parseISO(datetime);
+    return formatDistanceToNow(data, { addSuffix: true });
+  };
+
   return (
     <div>
       <form onSubmit={postComment} className="flex-row gap-3 items-start">
@@ -59,7 +66,7 @@ export default function Comments({ videoId }) {
         />
         <button
           disabled={loading}
-          className="px-3 py-1  bg-primary text-white rounded w-full cursor-pointer"
+          className="px-3 py-1  bg-primary/88 text-white rounded w-full cursor-pointer"
         >
           Post Comment
         </button>
@@ -74,7 +81,12 @@ export default function Comments({ videoId }) {
               alt={c.username}
             />
             <div>
-              <div className="text-sm font-semibold">{c.username}</div>
+              <div className="text-sm font-semibold flex items-center">
+                <div>{c.username}</div>
+                <div className="text-[11px] text-gray-400 ml-3">
+                  {formatdatetime(c.created_at)}
+                </div>
+              </div>
               <div className="text-sm text-muted-foreground">{c.text}</div>
             </div>
           </div>

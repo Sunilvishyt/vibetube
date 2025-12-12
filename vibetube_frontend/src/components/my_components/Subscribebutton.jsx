@@ -118,23 +118,23 @@ export default function Subscribebutton({ channelId }) {
 
   // Common button classes
   const buttonClasses = isSubscribed
-    ? "bg-gray-700 text-white border-gray-600 hover:bg-gray-600" // Subscribed (darker/subtle)
-    : "bg-red-600 text-white border-red-700 hover:bg-red-700"; // Not subscribed (prominent)
+    ? "bg-primary/88 text-white  hover:bg-gray-600" // Subscribed (darker/subtle)
+    : "bg-muted text-foreground hover:bg-sidebar-ring/80"; // Not subscribed (prominent)
 
-  const buttonText = isSubscribed ? "Subscribed" : "Subscribe";
+  const buttonText = isSubscribed ? "Matched" : "Match";
 
   return (
     <button
       onClick={toggleSubscription}
       disabled={loading || disabled}
-      className={`px-4 py-1.5 rounded-md border cursor-pointer flex items-center justify-center space-x-2 font-semibold transition-colors duration-200 ${buttonClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
+      className={`px-4 py-1.5 rounded-2xl border cursor-pointer flex items-center justify-center space-x-2 font-semibold transition-colors duration-200 ${buttonClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
     >
       {loading ? (
         <Loader2 size={18} className="animate-spin" />
       ) : isSubscribed ? (
         <Check size={18} className="text-white" />
       ) : (
-        <UserPlus size={18} className="text-white" />
+        <UserPlus size={18} className="text-foreground" />
       )}
       <div className="text-sm">{buttonText}</div>
       {/* Show count only if not loading and it's greater than 0, or always show 0 */}
