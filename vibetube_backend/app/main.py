@@ -256,13 +256,14 @@ def get_videos(
         limit: int = Query(DEFAULT_VIDEO_LIMIT, ge=1, le=50),  # Max 50 per request
         offset: int = Query(0, ge=0),
         exclude_ids: Optional[str] = Query(None),
+        channel_id: Optional[int] = Query(None),
         db: Session = Depends(get_db),
         current_user_id : int = Depends(get_current_user_id)
 ):
     """
     Fetches videos with pagination using limit and offset.
     """
-    VALID_CATEGORIES = {"music", "movies", "gaming", "anime", "education", "entertainment", "tech", "news", "vlogs","trending", "liked", "history"}
+    VALID_CATEGORIES = {"music", "movies", "gaming", "anime", "education", "entertainment", "tech", "news", "vlogs","trending", "liked", "history", "ChannelVideos"}
 
     if vid_query != "random" and vid_query not in VALID_CATEGORIES:
         raise HTTPException(400, "Invalid category")
@@ -300,7 +301,7 @@ def get_videos(
         videos = (
             basequery
             .join(database_models.View, database_models.View.video_id == database_models.Video.id)
-            .filter(database_models.View.user_id == current_user_id)
+            .filter(database_models.View.user_id ==1)
             .order_by(database_models.View.created_at.desc())
             .offset(offset)
             .limit(limit)
@@ -327,7 +328,15 @@ def get_videos(
             .limit(limit)
             .all()
         )
-
+    elif vid_query == "ChannelVideos":
+        videos = (
+            basequery
+            .filter(database_models.Video.user_id == channel_id)
+            .order_by(database_models.Video.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
     else:
         videos = (
             basequery
@@ -592,3 +601,20 @@ def get_subscribers(channel_id:int,
         return {"subscribed": "true", "subscribers": subscribers_count, "owner_watching": str(owner_watching)}
     else:
         return {"subscribed": "false", "subscribers": subscribers_count, "owner_watching": str(owner_watching)}
+
+
+@app.get("/channeldetails/{channel_id}")
+def channel_details(channel_id:int, 
+                    db:Session = Depends(get_db),
+                    ):
+    channel = db.query(database_models.User).filter(database_models.User.id == channel_id).first()
+    return channel
+
+@app.get("/morechanneldetails/{channel_id}")
+def more_channel_details(channel_id:int, 
+                    db:Session = Depends(get_db),
+                    ):
+    total_videos = db.query(database_models.Video).filter(database_models.Video.user_id == channel_id).count()
+    total_views = db.query(database_models.View).filter(database_models.View.video_id == database_models.Video.id).count()
+    total_subscribers = db.query(database_models.Subscription).filter(database_models.Subscription.channel_id == channel_id).count()
+    return {"total_videos": total_videos, "total_views": total_views, "total_subscribers": total_subscribers}

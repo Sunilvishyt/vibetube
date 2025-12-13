@@ -11,7 +11,7 @@ import Testpage from "./pages/Testpage";
 import Likedpage from "./pages/Likedpage";
 import Historypage from "./pages/Historypage";
 import Trendingpage from "./pages/Trendingpage";
-
+import Profilepage from "./pages/Profilepage";
 function App() {
   return (
     <>
@@ -26,6 +26,7 @@ function App() {
         <Route path="/liked" element={<Likedpage />} />
         <Route path="/history" element={<Historypage />} />
         <Route path="/trending" element={<Trendingpage />} />
+        <Route path="/profile/:id" element={<Profilepage />} />
         <Route path="/testpage" element={<Testpage />} />
       </Routes>
     </>

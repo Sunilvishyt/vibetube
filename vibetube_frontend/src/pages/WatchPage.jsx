@@ -3,10 +3,15 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { formatDistanceToNow, parseISO } from "date-fns";
-
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import Comments from "@/components/my_components/Comments";
 import LikeButton from "@/components/my_components/LikeButton";
 import Subscribebutton from "@/components/my_components/Subscribebutton";
+import { Link } from "react-router-dom";
 
 export default function WatchPage() {
   const { id } = useParams();
@@ -102,11 +107,13 @@ export default function WatchPage() {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <img
-                  src="https://placehold.co/40x40"
-                  alt={username}
-                  className="h-10 w-10 rounded-full object-cover"
-                />
+                <Link to={`/profile/${user_id}`}>
+                  <img
+                    src="https://placehold.co/40x40"
+                    alt={username}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                </Link>
                 <div>
                   <div className="font-black text-foreground/80">
                     {username}
@@ -131,17 +138,38 @@ export default function WatchPage() {
                 </button>
               </div>
             </div>
-            <div className="bg-accent rounded-lg p-2">
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {description}
-              </p>
+            <div className="bg-accent rounded-lg p-2 w-full">
+              <Collapsible>
+                <CollapsibleTrigger className="w-full flex items-center justify-between [&[data-state=open]>svg]:rotate-180">
+                  Description
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-4 w-4 transition-transform duration-200"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {description}
+                  </p>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           </div>
         </div>
 
         {/* RIGHT: Comments ONLY */}
         <div className="lg:col-span-1">
-          <div className="bg-card border border-border rounded-lg shadow-sm p-4 h-full overflow-y-auto max-h-[100vh]">
+          <div className="bg-card border border-border rounded-lg shadow-sm p-4 h-full overflow-y-auto max-h-screen">
             <Comments videoId={id} />
           </div>
         </div>

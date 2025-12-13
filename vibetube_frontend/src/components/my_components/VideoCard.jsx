@@ -121,11 +121,11 @@ const VideoCard = ({
                 {title}
               </h3>
               {/* Options Menu Icon */}
-              <MoreVertical className="w-4 h-4 text-gray-500 hover:text-gray-900 transition-colors shrink-0" />
+              <MoreVertical className="w-4 h-4 text-accent-foreground hover:text-gray-900 transition-colors shrink-0" />
             </div>
 
             {/* Channel Name with Verified Icon */}
-            <p className="text-xs text-gray-500 mt-1 flex items-center">
+            <p className="text-xs text-accent-foreground mt-1 flex items-center">
               {channelName}
               <CheckCircle className="w-3 h-3 ml-1 text-blue-500 fill-white" />
             </p>
