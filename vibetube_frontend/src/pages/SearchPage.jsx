@@ -179,7 +179,7 @@ export default function SearchPage() {
                     title={video.title}
                     channelName={video.username}
                     channelAvatar={
-                      video.user_avatar_url || "https://placehold.co/100"
+                      video.owner.profile_image || "https://placehold.co/100"
                     }
                     views={video.views}
                     uploadedAt={formatTimeAgo(video.created_at)}

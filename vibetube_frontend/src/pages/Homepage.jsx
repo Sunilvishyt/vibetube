@@ -17,6 +17,8 @@ function Homepage() {
   const [videos, setVideos] = useState([]);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [id, setId] = useState(-1);
+  const [profileurl, setProfileUrl] = useState("");
   // 💡 NEW STATE: Keep track of the current offset (which page we are on)
   const [offset, setOffset] = useState(0);
   // 💡 NEW STATE: Track if there are more videos to load (if the last fetch returned less than limit)
@@ -52,7 +54,9 @@ function Homepage() {
       const user = res.data.details.username;
       const user_email = res.data.details.email;
       setUsername(user);
+      setId(res.data.details.id);
       setEmail(user_email);
+      setProfileUrl(res.data.details.profile_image);
       return true;
     } catch (error) {
       // 3. Handle Errors (401 Unauthorized, 403 Forbidden, etc.)
@@ -203,7 +207,12 @@ function Homepage() {
   return (
     <>
       <Toaster position="bottom-right" richColors />
-      <Navbar userName={username} userEmail={email} />
+      <Navbar
+        userName={username}
+        userEmail={email}
+        id={id}
+        userAvatar={profileurl}
+      />
       <hr />
       <div className="bg-chart-3 h-fit w-full p-8">
         <BlurText
@@ -220,8 +229,8 @@ function Homepage() {
                 thumbnail={video.thumbnail_url}
                 duration={video.duration}
                 title={video.title}
-                channelName={video.username}
-                channelAvatar="https://picsum.photos/100"
+                channelName={video.owner.username}
+                channelAvatar={video.owner.profile_image}
                 views={video.views}
                 uploadedAt={formatTimeAgo(video.created_at)}
               />

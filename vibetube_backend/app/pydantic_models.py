@@ -27,6 +27,15 @@ class VideoCreate(BaseModel):
     visibility: Optional[str] = "public"
     category: Optional[str] = None
 
+class UserInVideo(BaseModel):
+    id: int
+    username: str
+    # The profile_image lives here, on the User model
+    profile_image: Optional[str] = None # <-- IMPORTANT: Set as Optional if it can be NULL in the DB
+
+    class Config:
+        from_attributes = True # Allows Pydantic to read ORM attributes
+
 class VideoOut(VideoCreate):
     id: int
     user_id: int
@@ -36,7 +45,7 @@ class VideoOut(VideoCreate):
     views: int
     created_at: datetime
     duration: str
-
+    owner: UserInVideo
     class Config:
         from_attributes = True
 

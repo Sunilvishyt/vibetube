@@ -51,7 +51,7 @@ class Video(Base):
     description = Column(Text, nullable=True)
 
     video_url = Column(String, nullable=False)
-    thumbnail_url = Column(String, nullable=False)  # auto extracted frame for now
+    thumbnail_url = Column(String, nullable=False) 
 
     visibility = Column(String(20), default="public")  # public / private
     category = Column(String(50), nullable=True)

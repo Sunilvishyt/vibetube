@@ -39,6 +39,7 @@ const formSchema = z.object({
 
 const RegisterPage = () => {
   const [Error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,7 +64,11 @@ const RegisterPage = () => {
       });
     } catch (error) {
       // Handle error message and display to user
-      setError(error.response.data.detail);
+      const errorResponse = error.response.data.detail;
+      errorResponse.includes("Email")
+        ? setEmailError(errorResponse)
+        : setError(errorResponse);
+
       // setFormError(error.response.data.detail);
     }
   }
@@ -122,6 +127,9 @@ const RegisterPage = () => {
                         {...field}
                       />
                     </FormControl>
+                    <FormDescription className="text-red-600">
+                      {emailError ? emailError : ""}
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

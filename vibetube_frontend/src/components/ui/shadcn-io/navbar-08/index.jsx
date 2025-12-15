@@ -286,6 +286,10 @@ export const Navbar08 = React.forwardRef(
         navigate("/logout", { replace: true });
       }
 
+      if (itemKey === "profile") {
+        navigate(`/profile/${props.id}`, { state: { editOptions: true } });
+      }
+
       // 3. Call the original external prop (if it was provided)
       if (onUserItemClick) {
         onUserItemClick(itemKey);

@@ -5,9 +5,11 @@ from sqlalchemy.sql.expression import func
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+from avatar_generater import generate_initial_avatar
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import or_, case, update
 from database import get_db
+from pathlib import Path
 import bcrypt
 import pydantic_models
 import database_models
@@ -40,17 +42,31 @@ app.add_middleware(
     allow_headers=['*']
 )
 
+app.mount("/avatars", StaticFiles(directory="storage/avatars"), name="avatars")
 app.mount("/videos", StaticFiles(directory="storage/videos"), name="videos")
 app.mount("/thumbnails", StaticFiles(directory="storage/thumbnails"), name="thumbnails")
 
-VIDEO_DIR = "storage/videos"
-THUMB_DIR = "storage/thumbnails"
+AVATAR_DIR = Path("storage/avatars") # <-- FIXED: Use Path()
+VIDEO_DIR = Path("storage/videos")
+THUMB_DIR = Path("storage/thumbnails")
 THUMB_WIDTH = 320 # Standard thumbnail width
 THUMB_HEIGHT = 180 # Standard thumbnail height
 THUMB_QUALITY = 85 # JPEG quality for compression
 
 os.makedirs(VIDEO_DIR, exist_ok=True)
 os.makedirs(THUMB_DIR, exist_ok=True)
+os.makedirs(AVATAR_DIR, exist_ok=True)
+
+def get_avatar_filepath(user_id: int) -> Path:
+    """Returns the expected Path object for a user's avatar."""
+    filename = f"user_{user_id}.png"
+    return AVATAR_DIR / filename
+
+def get_avatar_url(user_id: int) -> str:
+    """Returns the publicly accessible URL for the user's avatar."""
+    filename = f"user_{user_id}.png"
+    # This URL maps to the StaticFiles mount point: /static/
+    return f"/avatars/{filename}"
 
 # --- Function to hash password and verify.---
 def hash_password(password: str) -> str:
@@ -120,14 +136,36 @@ def get_video_duration(file_path: str) -> str:
 
     
 @app.post('/register')
-def create_user(user_details: pydantic_models.UserCreate, db: Session = Depends(get_db)):
+def create_user(user_details: pydantic_models.UserCreate, 
+                db: Session = Depends(get_db)
+                ):
     user_exists = db.query(database_models.User).filter_by(
         username = user_details.username
     ).first()
 
     if not user_exists:
+        email_exists = db.query(database_models.User).filter_by(
+            email = user_details.email
+        ).first()
+
+        if email_exists:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Email already exists"
+            )
+
         hashed_password = hash_password(user_details.password)
+        new_user_id = db.query(database_models.User).count() + 1
+        avatar_path = get_avatar_filepath(new_user_id)
+
+        generate_initial_avatar(
+            user_id=new_user_id,
+            full_name=user_details.username,
+            output_path=avatar_path
+        )
+
         user = database_models.User(username=user_details.username,
+                                    profile_image=f"http://127.0.0.1:8000{get_avatar_url(new_user_id)}",
                                     email=user_details.email,
                                     password_hash=hashed_password)
         db.add(user)
@@ -269,7 +307,9 @@ def get_videos(
         raise HTTPException(400, "Invalid category")
 
     # Base query
-    basequery = db.query(database_models.Video)
+    basequery = db.query(database_models.Video).options(
+    joinedload(database_models.Video.owner)
+)
     exclude_ids_list = []
 
     if vid_query == "random":
@@ -470,8 +510,11 @@ def search_videos(
     # Remove the offset calculation: offset = (page - 1) * limit
     like_query = f"%{query}%"
 
+    basequery = db.query(database_models.Video).options(
+        joinedload(database_models.Video.owner)
+    )
     videos = (
-        db.query(database_models.Video)
+        basequery
         .filter(
             or_(
                 database_models.Video.title.ilike(like_query),
@@ -496,10 +539,12 @@ def search_videos(
             "id": video.id,
             "title": video.title,
             "thumbnail_url": video.thumbnail_url,
+            "duration": video.duration,
             "video_url": video.video_url,
             "username": video.username,
             "views": video.views,
             "created_at": video.created_at.isoformat(),
+            "owner": video.owner
         }
         for video in videos
     ]
@@ -615,6 +660,54 @@ def more_channel_details(channel_id:int,
                     db:Session = Depends(get_db),
                     ):
     total_videos = db.query(database_models.Video).filter(database_models.Video.user_id == channel_id).count()
-    total_views = db.query(database_models.View).filter(database_models.View.video_id == database_models.Video.id).count()
+
+    total_views = db.query(database_models.View).join(
+        # 2. Join to the Video table
+        database_models.Video,
+        # 3. Use the explicit ON condition (or rely on relationships)
+        database_models.View.video_id == database_models.Video.id
+    ).filter(
+        # 4. Filter by the video's owner (the channel_id)
+        database_models.Video.user_id == channel_id
+    ).count()
     total_subscribers = db.query(database_models.Subscription).filter(database_models.Subscription.channel_id == channel_id).count()
     return {"total_videos": total_videos, "total_views": total_views, "total_subscribers": total_subscribers}
+
+
+@app.post("/updatechanneldetails")
+async def update_channel_details(
+    username: str = Form(...),
+    description: str = Form(None),
+    profile_image: UploadFile | None = File(None),
+    db: Session = Depends(get_db),
+    current_user_id: int = Depends(get_current_user_id)
+):
+    user = db.query(database_models.User).filter_by(id=current_user_id).first()
+    if not user:
+        raise HTTPException(404, "User not found")
+
+    avatar_path = get_avatar_filepath(current_user_id)
+
+    if profile_image:
+        if not profile_image.filename.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
+            raise HTTPException(400, "Invalid image type")
+
+        # delete old avatar
+        if avatar_path.exists():
+            avatar_path.unlink()
+
+        contents = await profile_image.read()
+        img = Image.open(BytesIO(contents)).convert("RGBA")
+
+        # resize to standard
+        img = img.resize((128, 128))
+
+        img.save(avatar_path, "PNG")
+
+        user.profile_image = f"http://127.0.0.1:8000{get_avatar_url(current_user_id)}"
+
+    user.username = username
+    user.channel_description = description
+    db.commit()
+
+    pass

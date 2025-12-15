@@ -77,6 +77,7 @@ export default function WatchPage() {
     views,
     created_at,
     username,
+    owner,
   } = video;
 
   const handleCopyLink = async () => {
@@ -109,7 +110,7 @@ export default function WatchPage() {
               <div className="flex items-center gap-3">
                 <Link to={`/profile/${user_id}`}>
                   <img
-                    src="https://placehold.co/40x40"
+                    src={owner.profile_image}
                     alt={username}
                     className="h-10 w-10 rounded-full object-cover"
                   />
