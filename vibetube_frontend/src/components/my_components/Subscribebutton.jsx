@@ -19,7 +19,6 @@ export default function Subscribebutton({ channelId }) {
 
     const token = localStorage.getItem("access_token");
     if (!token) {
-      // If no token, we navigate to login as the backend API is authenticated.
       console.log("Not authenticated. Redirecting to login.");
       navigate("/login");
       return;
@@ -52,7 +51,6 @@ export default function Subscribebutton({ channelId }) {
           navigate("/login");
         } else {
           console.error("Error fetching initial subscription status:", err);
-          // If the backend returns a 404/400 for a channel that doesn't exist, handle it here.
         }
       } finally {
         setLoading(false);
@@ -75,7 +73,6 @@ export default function Subscribebutton({ channelId }) {
 
     setLoading(true);
 
-    // --- Optimistic Update ---
     const previousSubscribed = isSubscribed;
     const previousCount = count;
 
@@ -88,11 +85,9 @@ export default function Subscribebutton({ channelId }) {
     try {
       await axios.post(
         `http://localhost:8000/subscribe`,
-        // Send the ID of the channel owner to the backend
         { user_id: channelId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      // Success: Optimistic update is maintained.
     } catch (err) {
       console.error(
         "Error toggling subscription status. Reverting state.",
@@ -137,7 +132,6 @@ export default function Subscribebutton({ channelId }) {
         <UserPlus size={18} className="text-foreground" />
       )}
       <div className="text-sm">{buttonText}</div>
-      {/* Show count only if not loading and it's greater than 0, or always show 0 */}
       <div className="text-sm font-light">| {count}</div>
     </button>
   );

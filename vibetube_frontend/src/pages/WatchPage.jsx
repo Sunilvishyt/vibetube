@@ -20,7 +20,6 @@ export default function WatchPage() {
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // const [fetchedViews, setFetchedViews] = useState(0);
 
   useEffect(() => {
     if (!id) {

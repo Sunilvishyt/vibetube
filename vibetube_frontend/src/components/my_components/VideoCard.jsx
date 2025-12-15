@@ -1,7 +1,6 @@
 import React from "react";
 import { CheckCircle, MoreVertical } from "lucide-react";
 import { Link } from "react-router-dom";
-// --- MOCK SHADCN/UI COMPONENTS (Necessary for runnability without external imports) ---
 
 const Card = ({ children, className = "" }) => (
   <div
@@ -67,7 +66,6 @@ const Badge = ({ children, className = "", variant = "default" }) => {
 };
 
 // --- Video Card Component ---
-
 const VideoCard = ({
   id,
   thumbnail,
@@ -136,7 +134,6 @@ const VideoCard = ({
           </div>
         </CardContent>
 
-        {/* Optional tags - Using px-4 for consistent alignment */}
         {tags.length > 0 && (
           <CardFooter className="flex gap-1 flex-wrap px-4 pb-4 pt-1">
             {tags.slice(0, 3).map((tag, index) => (
@@ -155,25 +152,3 @@ const VideoCard = ({
   );
 };
 export default VideoCard;
-/* ================== USAGE ==================
-
-import VideoCard from "@/components/VideoCard";
-
-export default function HomePage() {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
-      <VideoCard
-        thumbnail="https://picsum.photos/400/300"
-        duration="12:45"
-        title="How to build a YouTube style UI using shadcn + Tailwind"
-        channelName="Harsh Dev"
-        channelAvatar="https://picsum.photos/100"
-        views="245K"
-        uploadedAt="3 days ago"
-        tags={["React", "shadcn", "Tailwind"]}
-      />
-    </div>
-  );
-}
-
-*/

@@ -32,11 +32,8 @@ export default function SearchPage() {
 
     try {
       const res = await axios.get("http://localhost:8000/verify-token", {
-        // This 'headers' object is where you place the Authorization token
         headers: {
-          // This is the essential part for the token to be sent to FastAPI
           Authorization: `Bearer ${token}`,
-          // Note: 'Content-Type': 'application/json' is usually unnecessary for GET requests
         },
       });
       const user = res.data.details.username;
@@ -45,11 +42,9 @@ export default function SearchPage() {
       setEmail(user_email);
       return true;
     } catch (error) {
-      // 3. Handle Errors (401 Unauthorized, 403 Forbidden, etc.)
       const statusCode = error.response?.status;
 
       if (statusCode === 401 || statusCode === 403) {
-        // Token is invalid, expired, or user not found -> FORCE LOGOUT/REDIRECT
         localStorage.removeItem("access_token"); // Clean up stored token
         navigate("/login", {
           replace: true,
@@ -58,13 +53,12 @@ export default function SearchPage() {
             errorMessage: "login expired, please login again",
           },
         });
-        return false; // Stop execution here
+        return false;
       }
     }
   };
 
   const fetchVideos = async (query, fetchOffset, isLoadMore = false) => {
-    // Only show full page spinner on initial load, otherwise show button loading
     if (!isLoadMore) {
       setLoading(true);
     }
@@ -73,14 +67,13 @@ export default function SearchPage() {
       const res = await axios.get("http://localhost:8000/search", {
         params: {
           query: query,
-          offset: fetchOffset, // Use offset instead of page
+          offset: fetchOffset,
           limit: VIDEOS_PER_BATCH,
         },
       });
 
       const newVideos = res.data;
 
-      // Update video state: APPEND if loading more, REPLACE if a new search query
       setResults((prevResults) =>
         isLoadMore ? [...prevResults, ...newVideos] : newVideos
       );
@@ -206,9 +199,6 @@ export default function SearchPage() {
               </div>
             </>
           )}
-
-          {/* Remove the old pagination controls here */}
-          {/* ... */}
         </div>
       </div>
     </>

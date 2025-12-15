@@ -30,16 +30,15 @@ class User(Base):
         cascade="all, delete"
     )
 
-    # 2. Subscriptions WHERE this user is the CHANNEL being followed (user is the SUBSCRIBED)
     subscribers = relationship(
         "Subscription",
         back_populates="channel",
-        foreign_keys="[Subscription.channel_id]", # <-- Explicitly defines the join column
+        foreign_keys="[Subscription.channel_id]",
         cascade="all, delete"
     )
 
-# ---------------- VIDEOS ----------------
 
+# ---------------- VIDEOS ----------------
 class Video(Base):
     __tablename__ = "videos"
 
@@ -52,7 +51,7 @@ class Video(Base):
     video_url = Column(String, nullable=False)
     thumbnail_url = Column(String, nullable=False) 
 
-    visibility = Column(String(20), default="public")  # public / private
+    visibility = Column(String(20), default="public")
     category = Column(String(50), nullable=True)
 
     views = Column(Integer, default=0)
@@ -65,8 +64,8 @@ class Video(Base):
     comments = relationship("Comment", back_populates="video", cascade="all, delete")
     view = relationship("View", back_populates="video", cascade="all, delete")
 
-# ---------------- LIKES / DISLIKES ----------------
 
+# ---------------- LIKES / DISLIKES ----------------
 class Like(Base):
     __tablename__ = "likes"
 
@@ -74,7 +73,7 @@ class Like(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     video_id = Column(Integer, ForeignKey("videos.id", ondelete="CASCADE"))
 
-    type = Column(String(10), nullable=False)  # like / dislike
+    type = Column(String(10), nullable=False) 
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
@@ -99,8 +98,8 @@ class Comment(Base):
     user = relationship("User", back_populates="comments")
     video = relationship("Video", back_populates="comments")
 
-#----------------------View---------------------
 
+#----------------------View---------------------
 class View(Base):
     __tablename__ = "view"
 

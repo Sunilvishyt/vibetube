@@ -353,7 +353,7 @@ function Profilepage() {
                             />
                           </div>
                         </div>
-                        <DialogFooter>
+                        <DialogFooter className="mt-2">
                           <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>
                           </DialogClose>

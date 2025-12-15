@@ -14,7 +14,7 @@ export function Themetoggle() {
     <ThemeToggleButton
       theme={theme} // "light" or "dark"
       onClick={handle}
-      variant="circle-blur" // you can choose "circle", "circle-blur", etc
+      variant="circle-blur"
       start="top-right" // where animation originates
     />
   );

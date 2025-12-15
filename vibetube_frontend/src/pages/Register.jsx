@@ -17,9 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 
-// We will use Axios here for the actual API call (you'll need to install it: npm install axios)
-// import axios from "axios";
-
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -49,10 +46,7 @@ const RegisterPage = () => {
     },
   });
 
-  // 💡 This is where you would put your Axios API call to FastAPI
   async function onSubmit(values) {
-    // --- Example API Call (Uncomment and configure when ready) ---
-
     try {
       await axios.post("http://localhost:8000/register", values);
       // Redirect user to login page or home page
@@ -68,17 +62,15 @@ const RegisterPage = () => {
       errorResponse.includes("Email")
         ? setEmailError(errorResponse)
         : setError(errorResponse);
-
-      // setFormError(error.response.data.detail);
     }
   }
   const navigate = useNavigate();
 
   return (
-    // Outer container for centering (from your original RegisterPage.jsx)
+    // Outer container
     <div className="bg-background flex w-full h-screen justify-center items-center">
       <div className="bg-muted h-fit p-7 rounded-2xl">
-        {/* Inner Form Container (from your original Register.jsx) */}
+        {/* Inner Form Container  */}
         <div className="w-full max-w-sm min-w-[360px]">
           <Form {...form}>
             <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>

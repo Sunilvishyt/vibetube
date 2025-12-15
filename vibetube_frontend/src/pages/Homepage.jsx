@@ -19,20 +19,22 @@ function Homepage() {
   const [email, setEmail] = useState("");
   const [id, setId] = useState(-1);
   const [profileurl, setProfileUrl] = useState("");
-  // 💡 NEW STATE: Keep track of the current offset (which page we are on)
+
+  //  Keep track of the current offset (which page we are on)
   const [offset, setOffset] = useState(0);
-  // 💡 NEW STATE: Track if there are more videos to load (if the last fetch returned less than limit)
+
+  // Track if there are more videos to load (if the last fetch returned less than limit)
   const [hasMore, setHasMore] = useState(true);
   const [sentVideoIds, setSentVideoIds] = useState(new Set());
 
-  // 💡 NEW STATE: Track the currently active category/query
+  //  Track the currently active category/query
   const [currentQuery, setCurrentQuery] = useState(
     location.state?.videoQuery || "random"
   );
   const [whichPage, setWhichPage] = useState(
     location.state?.whichPage || "For Your Vibe"
   );
-  // 💡 NEW STATE: Loading state for the Load More button
+  //  Loading state for the Load More button
   const [isLoading, setIsLoading] = useState(false);
 
   const verify_token = async () => {
@@ -44,11 +46,8 @@ function Homepage() {
 
     try {
       const res = await axios.get("http://localhost:8000/verify-token", {
-        // This 'headers' object is where you place the Authorization token
         headers: {
-          // This is the essential part for the token to be sent to FastAPI
           Authorization: `Bearer ${token}`,
-          // Note: 'Content-Type': 'application/json' is usually unnecessary for GET requests
         },
       });
       const user = res.data.details.username;
@@ -59,11 +58,10 @@ function Homepage() {
       setProfileUrl(res.data.details.profile_image);
       return true;
     } catch (error) {
-      // 3. Handle Errors (401 Unauthorized, 403 Forbidden, etc.)
+      //  Handle Errors (401 Unauthorized, 403 Forbidden, etc.)
       const statusCode = error.response?.status;
 
       if (statusCode === 401 || statusCode === 403) {
-        // Token is invalid, expired, or user not found -> FORCE LOGOUT/REDIRECT
         localStorage.removeItem("access_token"); // Clean up stored token
         navigate("/login", {
           replace: true,
@@ -72,7 +70,7 @@ function Homepage() {
             fromHomepage: true,
           },
         });
-        return false; // Stop execution here
+        return false;
       }
     }
   };
@@ -96,12 +94,12 @@ function Homepage() {
       );
       const newVideos = response.data;
 
-      // 💡 Update video state: APPEND if loading more, REPLACE if a new category
+      // Update video state: APPEND if loading more, REPLACE if a new category
       setVideos((prevVideos) =>
         isLoadMore ? [...prevVideos, ...newVideos] : newVideos
       );
 
-      // 💡 Update offset for the next request
+      // Update offset for the next request
       setOffset(fetchOffset + newVideos.length);
 
       // Update the sentVideoIds Set
@@ -111,14 +109,13 @@ function Homepage() {
         return updated;
       });
 
-      // 💡 Check if we received less than the requested limit, which means no more data
+      //  Check if we received less than the requested limit, which means no more data
       setHasMore(newVideos.length === VIDEOS_PER_PAGE);
     } catch (error) {
       console.error("Error fetching videos:", error);
-      // Optionally: setHasMore(false) on error to prevent trying again
       setHasMore(false);
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }
   };
 
@@ -132,7 +129,7 @@ function Homepage() {
 
         if (vidQuery !== currentQuery) {
           // Reset pagination state for a new category
-          setVideos([]); // Clear old videos
+          setVideos([]); // Clearing old videos
           setOffset(0);
           setHasMore(true);
           setCurrentQuery(vidQuery); // Update tracking query
@@ -141,7 +138,6 @@ function Homepage() {
           // Fetch the first batch for the new category (offset 0)
           fetchVideos(vidQuery, 0, false);
         } else if (videos.length === 0) {
-          // Initial load on first component mount for the current query
           fetchVideos(vidQuery, 0, false);
         }
       }
@@ -179,8 +175,6 @@ function Homepage() {
         </div>
       ));
 
-      // CRITICAL: Clear the state immediately after showing the toast
-      // The `replace: true` is essential here.
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state?.successMessage, location.pathname, navigate]);

@@ -65,7 +65,6 @@ def get_avatar_filepath(user_id: int) -> Path:
 def get_avatar_url(user_id: int) -> str:
     """Returns the publicly accessible URL for the user's avatar."""
     filename = f"user_{user_id}.png"
-    # This URL maps to the StaticFiles mount point: /static/
     return f"/avatars/{filename}"
 
 # --- Function to hash password and verify.---
@@ -186,15 +185,12 @@ def login_user_for_access_token(user_details: pydantic_models.UserLogin,
     if user_exists:
         if varify_hash(user_exists.password_hash, user_details.password):
 
-            # 2. Authentication Successful - Create Token
             access_token_expires = timedelta(minutes=jwt_config.ACCESS_TOKEN_EXPIRE_MINUTES)
 
             access_token = jwt_config.create_access_token(
-                # The payload contains the user's ID
                 data={"sub": str(user_exists.id)},
                 expires_delta=access_token_expires
             )
-            # 3. Return the Token
             return {"access_token": access_token, "token_type": "bearer"}
 
         raise HTTPException(

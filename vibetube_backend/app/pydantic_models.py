@@ -11,7 +11,7 @@ class UserLogin(BaseModel):
     username : str
     password : str
 
-class UserOut(BaseModel): #for sending the data out as a response.
+class UserOut(BaseModel):
     id : int
     profile_image : Optional[str] = None
     channel_description : Optional[str] = None
@@ -30,11 +30,10 @@ class VideoCreate(BaseModel):
 class UserInVideo(BaseModel):
     id: int
     username: str
-    # The profile_image lives here, on the User model
-    profile_image: Optional[str] = None # <-- IMPORTANT: Set as Optional if it can be NULL in the DB
+    profile_image: Optional[str] = None 
 
     class Config:
-        from_attributes = True # Allows Pydantic to read ORM attributes
+        from_attributes = True 
 
 class VideoOut(VideoCreate):
     id: int
@@ -53,7 +52,7 @@ class VideoQuery(BaseModel):
 
 class LikeToggle(BaseModel):
     video_id: int
-    type: str  # "like" or "dislike"
+    type: str 
 
 class SubscribeToggle(BaseModel):
     user_id: int
@@ -78,7 +77,7 @@ class CommentOut(BaseModel):
     video_id: int
     text: str
     created_at: datetime
-    user: CommentUserOut   # 👈 THIS is what frontend needs
+    user: CommentUserOut 
 
     class Config:
         from_attributes = True

@@ -1,9 +1,7 @@
 // File: MoreButton.jsx (or wherever NeumorphismButton is defined)
 import { Menu } from "lucide-react";
 
-// --- Fix: Pass props down and use a div/span ---
 const NeumorphismWrapper = (props) => {
-  // Pass all received props to the wrapper element
   return (
     <div
       {...props} // This spreads all props (including the onClick, aria-controls, etc. from SheetTrigger)
@@ -22,7 +20,7 @@ const NeumorphismWrapper = (props) => {
         ${props.className || ""} 
       `}
     >
-      <Menu className="h-4 w-4" /> {/* Added h-4 w-4 for size */}
+      <Menu className="h-4 w-4" />
       <span>More</span>
     </div>
   );

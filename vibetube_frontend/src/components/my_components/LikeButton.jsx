@@ -9,16 +9,16 @@ export default function LikeButton({ videoId }) {
   const [count, setCount] = useState(0);
   // State for whether the current user has liked the video
   const [liked, setLiked] = useState(false);
+  // State for the loading indicator
   const [loading, setLoading] = useState(false);
 
   // FIX 1: Call useNavigate as a hook
   const navigate = useNavigate();
 
-  // EFFECT: Fetch initial like status and count when the component mounts or videoId changes.
+  // EFFECT: Fetchint initial like status and count when the component mounts or videoId changes.
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) {
-      // If no token, do not attempt API call; maybe disable button or show 0 likes
       console.log("Not authenticated. Skipping initial like fetch.");
       navigate("/login");
       return;
@@ -35,14 +35,12 @@ export default function LikeButton({ videoId }) {
 
         setCount(res.data.likes);
 
-        // Convert the string response ("true" or "false") from the backend to boolean
         if (res.data.liked === "true") {
           setLiked(true);
         } else {
           setLiked(false);
         }
       } catch (err) {
-        // Handle token expiration errors gracefully here if the backend returns 401/403
         if (
           err.response &&
           (err.response.status === 401 || err.response.status === 403)
@@ -58,7 +56,7 @@ export default function LikeButton({ videoId }) {
     };
 
     fetchLikes();
-  }, [videoId, navigate]); // videoId ensures data refreshes when watching a new video
+  }, [videoId, navigate]);
 
   // HANDLER: Toggles the like state and interacts with the API
   async function toggleLike() {
@@ -73,16 +71,11 @@ export default function LikeButton({ videoId }) {
 
     setLoading(true);
 
-    // --- Optimistic Update ---
     const previousLiked = liked;
     const previousCount = count;
 
-    // Toggle the liked state immediately
     setLiked((prev) => !prev);
 
-    // FIX 2: Corrected Count Logic
-    // If it was previously liked (we are UNLIKING), decrement count.
-    // If it was not previously liked (we are LIKING), increment count.
     setCount((prev) => (previousLiked ? prev - 1 : prev + 1));
 
     try {
@@ -91,12 +84,9 @@ export default function LikeButton({ videoId }) {
         { video_id: videoId, type: "like" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      // Success: The optimistic update is maintained.
     } catch (err) {
       console.error("Error toggling like status. Reverting state.", err);
 
-      // Revert the Optimistic Update if the API call fails
       setLiked(previousLiked);
       setCount(previousCount);
     } finally {
@@ -104,7 +94,6 @@ export default function LikeButton({ videoId }) {
     }
   }
 
-  // Determine button appearance using Tailwind classes
   const buttonClasses = liked
     ? "bg-primary text-white hover:bg-primary/80"
     : "bg-muted text-foreground  hover:bg-muted/90";
