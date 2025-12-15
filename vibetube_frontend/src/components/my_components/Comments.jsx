@@ -82,7 +82,7 @@ export default function Comments({ videoId }) {
             />
             <div>
               <div className="text-sm font-semibold flex items-center">
-                <div>{c.username}</div>
+                <div>{c.user?.username}</div>
                 <div className="text-[11px] text-gray-400 ml-3">
                   {formatdatetime(c.created_at)}
                 </div>
