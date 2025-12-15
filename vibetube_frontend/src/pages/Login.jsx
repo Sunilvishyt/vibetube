@@ -39,6 +39,7 @@ const RegisterPage = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -103,6 +104,7 @@ const RegisterPage = () => {
   // 💡 This is where you would put your Axios API call to FastAPI
   async function onSubmit(values) {
     // --- Example API Call (Uncomment and configure when ready) ---
+    setIsLoading(true);
     try {
       const response = await axios.post("http://localhost:8000/login", values);
       localStorage.setItem("access_token", response.data.access_token);
@@ -116,6 +118,8 @@ const RegisterPage = () => {
     } catch (error) {
       // Handle error message and display to user
       setError(error.response.data.detail);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -189,7 +193,7 @@ const RegisterPage = () => {
 
                 {/* Submission Button */}
                 <Button className="w-full" type="submit">
-                  Login
+                  {isLoading ? "Loading..." : "Login"}
                 </Button>
 
                 {/* Sign In Link */}

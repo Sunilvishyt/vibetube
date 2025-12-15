@@ -37,6 +37,7 @@ const formSchema = z.object({
 const RegisterPage = () => {
   const [Error, setError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,6 +48,7 @@ const RegisterPage = () => {
   });
 
   async function onSubmit(values) {
+    setIsLoading(true);
     try {
       await axios.post("http://localhost:8000/register", values);
       // Redirect user to login page or home page
@@ -62,6 +64,8 @@ const RegisterPage = () => {
       errorResponse.includes("Email")
         ? setEmailError(errorResponse)
         : setError(errorResponse);
+    } finally {
+      setIsLoading(false);
     }
   }
   const navigate = useNavigate();
@@ -152,7 +156,7 @@ const RegisterPage = () => {
 
               {/* Submission Button */}
               <Button className="w-full" type="submit">
-                Create Account
+                {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
 
               {/* Sign In Link */}
