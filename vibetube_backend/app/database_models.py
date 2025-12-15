@@ -45,7 +45,6 @@ class Video(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
-    username = Column(String(50), nullable=False)
 
     title = Column(String(200), nullable=False)
     description = Column(Text, nullable=True)
@@ -90,7 +89,6 @@ class Comment(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
-    username = Column(String(50), nullable=False)
     video_id = Column(Integer, ForeignKey("videos.id", ondelete="CASCADE"))
 
     text = Column(Text, nullable=False)

@@ -76,7 +76,7 @@ export default function Comments({ videoId }) {
         {comments.map((c) => (
           <div key={c.id} className="flex gap-3">
             <img
-              src={c.user?.avatar || "https://placehold.co/40x40"}
+              src={c.user?.profile_image || "https://placehold.co/40x40"}
               className="h-8 w-8 rounded-full object-cover"
               alt={c.username}
             />

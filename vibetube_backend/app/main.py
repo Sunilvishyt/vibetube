@@ -266,13 +266,9 @@ async def upload_video(
             os.remove(video_path)
         raise HTTPException(status_code=500, detail=f"Failed to process or save thumbnail: {e}")
 
-    #fetch username
-    user = db.query(database_models.User).filter_by(id=current_user_id).first()
-
     # 5. Save to database
     video = database_models.Video(
         user_id=current_user_id,
-        username=user.username,
         video_url=f"http://127.0.0.1:8000/videos/{video_filename}",
         thumbnail_url=f"http://127.0.0.1:8000/thumbnails/{thumb_filename}",
         duration=duration,
@@ -447,7 +443,6 @@ def create_comment(data: pydantic_models.CommentCreate,
     new_comment = database_models.Comment(
         video_id= data.video_id,
         user_id=current_user_id,
-        username = username.username,
         text=data.text
     )
 
@@ -458,35 +453,18 @@ def create_comment(data: pydantic_models.CommentCreate,
     return new_comment
 
 
-@app.get("/comments/{video_id}")
+@app.get("/comments/{video_id}", response_model=list[pydantic_models.CommentOut])
 def get_comments(video_id: int, db: Session = Depends(get_db)):
-
-    comments = db.query(database_models.Comment).filter(
-        database_models.Comment.video_id == video_id
-    ).order_by(database_models.Comment.created_at.desc()).all()
-
+    comments = (
+        db.query(database_models.Comment)
+        .join(database_models.Comment.user)
+        .options(joinedload(database_models.Comment.user))
+        .filter(database_models.Comment.video_id == video_id)
+        .order_by(database_models.Comment.created_at.desc())
+        .all()
+    )
     return comments
 
-""" response we will get like this -
-[
-  {
-    "username": "test",
-    "user_id": 1,
-    "text": "second this is the pushed comment by me.",
-    "id": 2,
-    "video_id": 1,
-    "created_at": "2025-12-04T08:01:00"
-  },
-  {
-    "username": "test",
-    "user_id": 1,
-    "text": "this is the pushed comment by me.",
-    "id": 1,
-    "video_id": 1,
-    "created_at": "2025-12-04T08:00:23"
-  }
-]
-"""
 @app.get('/verify-token')
 def verify_token(db:Session = Depends(get_db),
                  current_user_id : int = Depends(get_current_user_id)):
@@ -502,7 +480,6 @@ def verify_token(db:Session = Depends(get_db),
 @app.get("/search")
 def search_videos(
     query: str = Query(..., min_length=1),
-    # Change 'page' to 'offset'
     offset: int = Query(0, ge=0),
     limit: int = Query(12, le=100), # Change default limit to 12
     db: Session = Depends(get_db),
@@ -510,29 +487,29 @@ def search_videos(
     # Remove the offset calculation: offset = (page - 1) * limit
     like_query = f"%{query}%"
 
-    basequery = db.query(database_models.Video).options(
-        joinedload(database_models.Video.owner)
-    )
     videos = (
-        basequery
-        .filter(
-            or_(
-                database_models.Video.title.ilike(like_query),
-                database_models.Video.description.ilike(like_query),
-                database_models.Video.username.ilike(like_query),
-            )
+    db.query(database_models.Video)
+    .join(database_models.Video.owner)   # ✅ REQUIRED
+    .options(joinedload(database_models.Video.owner))
+    .filter(
+        or_(
+            database_models.Video.title.ilike(like_query),
+            database_models.Video.description.ilike(like_query),
+            database_models.User.username.ilike(like_query),  # ✅ correct
         )
-        .order_by(
-            case(
-        (database_models.Video.title.ilike(like_query), 1),
-                (database_models.Video.username.ilike(like_query), 2),
-                else_=3
-    ),
-    database_models.Video.views.desc())
-        .offset(offset) # Use the offset directly
-        .limit(limit)
-        .all()
     )
+    .order_by(
+        case(
+            (database_models.Video.title.ilike(like_query), 1),
+            (database_models.User.username.ilike(like_query), 2),
+            else_=3,
+        ),
+        database_models.Video.views.desc(),
+    )
+    .offset(offset)
+    .limit(limit)
+    .all()
+)
 
     return [
         {
@@ -541,14 +518,13 @@ def search_videos(
             "thumbnail_url": video.thumbnail_url,
             "duration": video.duration,
             "video_url": video.video_url,
-            "username": video.username,
+            "username": video.owner.username,
+            "profile_image": video.owner.profile_image,
             "views": video.views,
             "created_at": video.created_at.isoformat(),
-            "owner": video.owner
         }
         for video in videos
     ]
-
 
 @app.post('/view')
 def increase_view(data:pydantic_models.ViewIncrement,

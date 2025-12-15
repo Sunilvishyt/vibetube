@@ -39,7 +39,6 @@ class UserInVideo(BaseModel):
 class VideoOut(VideoCreate):
     id: int
     user_id: int
-    username: str
     video_url: str
     thumbnail_url: str
     views: int
@@ -67,18 +66,23 @@ class CommentCreate(BaseModel):
     text: str
 
 
-class CommentOut(BaseModel):
-    id: int
-    user_id: int
+class CommentUserOut(BaseModel):
     username: str
-    video_id: int
-    text: str
-    created_at: datetime
+    profile_image: str | None
 
     class Config:
         from_attributes = True
 
-        
+class CommentOut(BaseModel):
+    id: int
+    video_id: int
+    text: str
+    created_at: datetime
+    user: CommentUserOut   # 👈 THIS is what frontend needs
+
+    class Config:
+        from_attributes = True
+
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"

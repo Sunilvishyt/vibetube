@@ -69,16 +69,8 @@ export default function WatchPage() {
   if (error) return <div className="p-8 text-destructive">{error}</div>;
   if (!video) return null;
 
-  const {
-    title,
-    description,
-    user_id,
-    video_url,
-    views,
-    created_at,
-    username,
-    owner,
-  } = video;
+  const { title, description, user_id, video_url, views, created_at, owner } =
+    video;
 
   const handleCopyLink = async () => {
     try {
@@ -111,13 +103,13 @@ export default function WatchPage() {
                 <Link to={`/profile/${user_id}`}>
                   <img
                     src={owner.profile_image}
-                    alt={username}
+                    alt={owner.username}
                     className="h-10 w-10 rounded-full object-cover"
                   />
                 </Link>
                 <div>
                   <div className="font-black text-foreground/80">
-                    {username}
+                    {owner.username}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {views} views •{" "}

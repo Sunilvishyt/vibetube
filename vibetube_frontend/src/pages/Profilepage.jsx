@@ -220,6 +220,7 @@ function Profilepage() {
     fetchMoreDetails,
     navigate,
     views,
+    profileLink,
   ]);
 
   useEffect(() => {
@@ -319,10 +320,10 @@ function Profilepage() {
                                   ref={imgRef}
                                   src={selectedImage}
                                   alt="Crop"
-                                  onLoad={(e) => {
+                                  onLoad={() => {
                                     setCrop({
                                       unit: "%",
-                                      width: 80,
+                                      width: 60,
                                       height: 80,
                                       x: 10,
                                       y: 10,
@@ -356,7 +357,9 @@ function Profilepage() {
                           <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>
                           </DialogClose>
-                          <Button type="submit">Save changes</Button>
+                          <DialogClose>
+                            <Button type="submit">Save changes</Button>
+                          </DialogClose>
                         </DialogFooter>
                       </form>
                     </DialogContent>
