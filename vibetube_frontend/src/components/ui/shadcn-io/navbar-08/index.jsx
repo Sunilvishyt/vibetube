@@ -334,7 +334,6 @@ export const Navbar08 = React.forwardRef(
       { name: "🔥 Trending", href: "/trending" },
       { name: "❤️ Liked Videos", href: "/liked" },
       { name: "🕒 History", href: "/history" },
-      { name: "ℹ️ About vibetube", href: "/about" },
     ];
 
     return (
