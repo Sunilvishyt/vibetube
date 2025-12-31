@@ -238,7 +238,7 @@ function Profilepage() {
   }
 
   return (
-    <div className="w-full h-fit flex justify-center bg-chart-3 pt-8">
+    <div className="w-full min-h-screen h-fit flex justify-center bg-chart-3 pt-8">
       <div>
         {/* === CHANNEL HEADER === */}
         <div className="flex justify-between p-4 w-[80vw] min-w-[500px] max-w-[1000px] gap-6 border-b border-border mb-8">
@@ -382,7 +382,7 @@ function Profilepage() {
         </div>
 
         {/* === VIDEO GRID === */}
-        <div className=" h-fit w-full p-4 bg-muted rounded-t-3xl shadow-xl">
+        <div className="min-h-screen h-fit w-full p-4 bg-muted rounded-t-3xl shadow-xl">
           <h2 className="text-2xl font-bold mb-4 ml-6 max-w-[1000px] mx-auto text-foreground">
             Videos ({videos.length})
           </h2>

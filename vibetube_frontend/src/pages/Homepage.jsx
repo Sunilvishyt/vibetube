@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import axios from "axios";
 import { toast, Toaster } from "sonner";
-import { Heart } from "lucide-react";
+import { Heart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BlurText from "@/components/ui/shadcn-io/blur-text";
 
@@ -36,6 +36,7 @@ function Homepage() {
   );
   //  Loading state for the Load More button
   const [isLoading, setIsLoading] = useState(false);
+  const [videosLoading, setvideosLoading] = useState(true);
 
   const verify_token = async () => {
     const token = localStorage.getItem("access_token");
@@ -75,9 +76,6 @@ function Homepage() {
     }
   };
 
-  // ---------------------------------------------
-  // 💡 CORE FETCH LOGIC
-  // ---------------------------------------------
   const fetchVideos = async (query, fetchOffset, isLoadMore = false) => {
     setIsLoading(true); // Start loading
 
@@ -116,6 +114,7 @@ function Homepage() {
       setHasMore(false);
     } finally {
       setIsLoading(false);
+      setvideosLoading(false);
     }
   };
 
@@ -208,44 +207,56 @@ function Homepage() {
         userAvatar={profileurl}
       />
       <hr />
-      <div className="bg-chart-3 h-fit w-full p-8">
-        <BlurText
-          className="font-bold size-18 text-3xl w-full ml-2"
-          text={whichPage}
-          stepDuration="0.5"
-        />
-        <div className="flex justify-center w-full">
-          <div className="flex w-[85vw] max-w-[1100px] gap-6 flex-wrap ">
-            {videos.map((video) => (
-              <VideoCard
-                key={video.id}
-                id={video.id}
-                thumbnail={video.thumbnail_url}
-                duration={video.duration}
-                title={video.title}
-                channelName={video.owner.username}
-                channelAvatar={video.owner.profile_image}
-                views={video.views}
-                uploadedAt={formatTimeAgo(video.created_at)}
-              />
-            ))}
+      <div className="bg-chart-3 min-h-screen h-fit w-full p-8">
+        {videosLoading ? (
+          <div className="flex w-full mt-[20vh] justify-center items-center">
+            <Loader2 className="animate-spin size-15 text-primary" />
           </div>
-        </div>
-        {/* 💡 LOAD MORE BUTTON */}
-        <div className="flex justify-center w-full mt-8">
-          {hasMore && (
-            <Button
-              onClick={handleLoadMore}
-              disabled={isLoading}
-              className="w-40"
-            >
-              {isLoading ? "Loading..." : "Load More"}
-            </Button>
-          )}
-          {!hasMore && videos.length > 0 && (
-            <p className="text-muted-foreground">You've reached the end!</p>
-          )}
-        </div>
+        ) : videos.length === 0 ? (
+          <div className="flex justify-center items-center h-40 text-muted-foreground">
+            Videos not available :(
+          </div>
+        ) : (
+          <div>
+            <BlurText
+              className="font-bold size-18 text-3xl w-full ml-2"
+              text={whichPage}
+              stepDuration="0.5"
+            />
+            <div className="flex justify-center w-full">
+              <div className="flex w-[85vw] max-w-[1100px] gap-6 flex-wrap ">
+                {videos.map((video) => (
+                  <VideoCard
+                    key={video.id}
+                    id={video.id}
+                    thumbnail={video.thumbnail_url}
+                    duration={video.duration}
+                    title={video.title}
+                    channelName={video.owner.username}
+                    channelAvatar={video.owner.profile_image}
+                    views={video.views}
+                    uploadedAt={formatTimeAgo(video.created_at)}
+                  />
+                ))}
+              </div>
+            </div>
+            {/* 💡 LOAD MORE BUTTON */}
+            <div className="flex justify-center w-full mt-8">
+              {hasMore && (
+                <Button
+                  onClick={handleLoadMore}
+                  disabled={isLoading}
+                  className="w-40"
+                >
+                  {isLoading ? "Loading..." : "Load More"}
+                </Button>
+              )}
+              {!hasMore && videos.length > 0 && (
+                <p className="text-muted-foreground">You've reached the end!</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

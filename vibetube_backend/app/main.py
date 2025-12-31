@@ -333,7 +333,7 @@ def get_videos(
         videos = (
             basequery
             .join(database_models.View, database_models.View.video_id == database_models.Video.id)
-            .filter(database_models.View.user_id ==1)
+            .filter(database_models.View.user_id == current_user_id)
             .order_by(database_models.View.created_at.desc())
             .offset(offset)
             .limit(limit)
