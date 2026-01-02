@@ -5,7 +5,7 @@ import axios from "axios";
 import VideoCard from "@/components/my_components/VideoCard";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import Navbar from "@/components/my_components/Navbar";
-
+import { Loader2 } from "lucide-react";
 const VIDEOS_PER_BATCH = 12;
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -17,6 +17,7 @@ export default function SearchPage() {
   const q = query.get("q") || "";
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [videosLoading, setVideosLoading] = useState(true);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [totalEmpty, setTotalEmpty] = useState(false);
@@ -95,6 +96,7 @@ export default function SearchPage() {
       setHasMore(false);
     } finally {
       setLoading(false);
+      setVideosLoading(false);
     }
   };
 
@@ -115,6 +117,7 @@ export default function SearchPage() {
 
         // 3. Fetch the first batch (offset 0)
         fetchVideos(q, 0, false);
+        setVideosLoading(true);
       }
     };
 
@@ -150,56 +153,62 @@ export default function SearchPage() {
   return (
     <>
       <Navbar userName={username} userEmail={email} />
-      <div className="flex w-full mx-auto p-6 bg-chart-3 pb-23 justify-center">
-        <div className="flex-row w-[90vw]  max-w-[1050px] gap-1 flex-wrap justify-center">
-          <h2 className="text-lg font-semibold mb-4">
-            Search results for “{q}”
-          </h2>
+      <div className="flex min-h-screen w-full mx-auto p-6 bg-chart-3 pb-23 justify-center">
+        {videosLoading ? (
+          <div className="flex w-full mt-[20vh] justify-center items-center">
+            <Loader2 className="animate-spin size-15 text-primary" />
+          </div>
+        ) : (
+          <div className="flex-row w-[90vw]  max-w-[1050px] gap-1 flex-wrap justify-center">
+            <h2 className="text-lg font-semibold mb-4">
+              Search results for “{q}”
+            </h2>
 
-          {loading && results.length === 0 ? ( // Only show main loading spinner if no results have been loaded yet
-            <div>Loading...</div>
-          ) : totalEmpty ? (
-            <div className="text-muted-foreground">No results found.</div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {results.map((video) => (
-                  <VideoCard
-                    key={video.id}
-                    id={video.id}
-                    thumbnail={video.thumbnail_url}
-                    duration={video.duration || "0:00"}
-                    title={video.title}
-                    channelName={video.username}
-                    channelAvatar={
-                      video.profile_image || "https://placehold.co/100"
-                    }
-                    views={video.views}
-                    uploadedAt={formatTimeAgo(video.created_at)}
-                  />
-                ))}
-              </div>
+            {loading && results.length === 0 ? ( // Only show main loading spinner if no results have been loaded yet
+              <div>Loading...</div>
+            ) : totalEmpty ? (
+              <div className="text-muted-foreground">No results found.</div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {results.map((video) => (
+                    <VideoCard
+                      key={video.id}
+                      id={video.id}
+                      thumbnail={video.thumbnail_url}
+                      duration={video.duration || "0:00"}
+                      title={video.title}
+                      channelName={video.username}
+                      channelAvatar={
+                        video.profile_image || "https://placehold.co/100"
+                      }
+                      views={video.views}
+                      uploadedAt={formatTimeAgo(video.created_at)}
+                    />
+                  ))}
+                </div>
 
-              {/* Load More Button */}
-              <div className="flex justify-center w-full mt-8">
-                {hasMore && (
-                  <button
-                    onClick={handleLoadMore}
-                    disabled={loading} // Use 'loading' state as Load More button loading
-                    className="w-40 px-3 py-1 border rounded disabled:opacity-50"
-                  >
-                    {loading ? "Loading..." : "Load More"}
-                  </button>
-                )}
-                {!hasMore && results.length > 0 && (
-                  <p className="text-muted-foreground">
-                    You've reached the end!
-                  </p>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+                {/* Load More Button */}
+                <div className="flex justify-center w-full mt-8">
+                  {hasMore && (
+                    <button
+                      onClick={handleLoadMore}
+                      disabled={loading} // Use 'loading' state as Load More button loading
+                      className="w-40 px-3 py-1 border rounded disabled:opacity-50"
+                    >
+                      {loading ? "Loading..." : "Load More"}
+                    </button>
+                  )}
+                  {!hasMore && results.length > 0 && (
+                    <p className="text-muted-foreground">
+                      You've reached the end!
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

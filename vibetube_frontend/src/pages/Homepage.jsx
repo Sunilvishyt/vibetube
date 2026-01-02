@@ -76,9 +76,14 @@ function Homepage() {
     }
   };
 
-  const fetchVideos = async (query, fetchOffset, isLoadMore = false) => {
+  const fetchVideos = async (
+    query,
+    fetchOffset,
+    isLoadMore = false,
+    videosloading = false
+  ) => {
     setIsLoading(true); // Start loading
-
+    if (videosloading) setvideosLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       let excludeParam = Array.from(sentVideoIds).join(",");
@@ -135,9 +140,9 @@ function Homepage() {
           setSentVideoIds(new Set());
 
           // Fetch the first batch for the new category (offset 0)
-          fetchVideos(vidQuery, 0, false);
+          fetchVideos(vidQuery, 0, false, true);
         } else if (videos.length === 0) {
-          fetchVideos(vidQuery, 0, false);
+          fetchVideos(vidQuery, 0, false, true);
         }
       }
     };
