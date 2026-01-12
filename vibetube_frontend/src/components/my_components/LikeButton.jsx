@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { ThumbsUp } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import api from "@/api/axios";
 
 export default function LikeButton({ videoId }) {
   // State for the number of likes
@@ -29,7 +29,7 @@ export default function LikeButton({ videoId }) {
         setLoading(true);
 
         // Fetch like status and total count for the video
-        const res = await axios.get(`http://localhost:8000/likes/${videoId}`, {
+        const res = await api.get(`/likes/${videoId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -79,8 +79,8 @@ export default function LikeButton({ videoId }) {
     setCount((prev) => (previousLiked ? prev - 1 : prev + 1));
 
     try {
-      await axios.post(
-        `http://localhost:8000/like`,
+      await api.post(
+        `/like`,
         { video_id: videoId, type: "like" },
         { headers: { Authorization: `Bearer ${token}` } }
       );

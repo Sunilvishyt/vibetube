@@ -9,7 +9,6 @@ import { toast, Toaster } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Heart } from "lucide-react";
 
-import axios from "axios";
 import {
   Form,
   FormControl,
@@ -20,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import api from "@/api/axios";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -106,7 +106,7 @@ const RegisterPage = () => {
     // --- Example API Call (Uncomment and configure when ready) ---
     setIsLoading(true);
     try {
-      const response = await axios.post("http://localhost:8000/login", values);
+      const response = await api.post("/login", values);
       localStorage.setItem("access_token", response.data.access_token);
       // Redirect user to login page or home page
       navigate("/", {

@@ -1,11 +1,11 @@
 // SearchPage.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import VideoCard from "@/components/my_components/VideoCard";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import Navbar from "@/components/my_components/Navbar";
 import { Loader2 } from "lucide-react";
+import api from "@/api/axios";
 const VIDEOS_PER_BATCH = 12;
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -32,7 +32,7 @@ export default function SearchPage() {
     }
 
     try {
-      const res = await axios.get("http://localhost:8000/verify-token", {
+      const res = await api.get("/verify-token", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,7 +65,7 @@ export default function SearchPage() {
     }
 
     try {
-      const res = await axios.get("http://localhost:8000/search", {
+      const res = await api.get("/search", {
         params: {
           query: query,
           offset: fetchOffset,

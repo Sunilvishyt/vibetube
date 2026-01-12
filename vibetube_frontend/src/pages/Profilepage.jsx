@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Infoblock from "@/components/my_components/Infoblock";
-import { CircleCheckBig, CalendarFold, Loader2 } from "lucide-react"; // Added Loader2
+import { CircleCheckBig, CalendarFold, Loader2 } from "lucide-react";
 import Subscribebutton from "@/components/my_components/Subscribebutton";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { parseISO } from "date-fns/parseISO";
@@ -26,10 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-// NOTE: You'll need a mechanism (like useParams or a global user state)
-// to get the actual Channel ID/Username of the profile you are viewing.
-// For this example, we'll assume a fixed `CHANNEL_ID` and `CHANNEL_USERNAME`
-// or you can pass it in as a prop later.
+import api from "@/api/axios";
 
 const VIDEOS_PER_PAGE = 12;
 
@@ -67,9 +63,7 @@ function Profilepage() {
   const fetchUserDetails = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(
-        `http://localhost:8000/channeldetails/${id}`
-      );
+      const response = await api.get(`/channeldetails/${id}`);
       setUsername(response.data.username);
       setDescription(response.data.channel_description);
       setJoinedDate(formatIsoDate(response.data.created_at));
@@ -84,9 +78,7 @@ function Profilepage() {
   const fetchMoreDetails = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(
-        `http://localhost:8000/morechanneldetails/${id}`
-      );
+      const response = await api.get(`/morechanneldetails/${id}`);
       setSubscribers(response.data.total_subscribers);
       setViews(response.data.total_views);
       setTotalVideos(response.data.total_videos);
@@ -102,8 +94,8 @@ function Profilepage() {
       setIsLoading(true);
       try {
         const token = localStorage.getItem("access_token");
-        const response = await axios.get(
-          `http://localhost:8000/getvideos/ChannelVideos?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&channel_id=${id}`,
+        const response = await api.get(
+          `/getvideos/ChannelVideos?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&channel_id=${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -196,7 +188,7 @@ function Profilepage() {
       formData.append("profile_image", blob, "avatar.png");
     }
 
-    await axios.post("http://localhost:8000/updatechanneldetails", formData, {
+    await api.post("/updatechanneldetails", formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",

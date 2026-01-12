@@ -1,9 +1,9 @@
 // Comments.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { parseISO } from "date-fns/parseISO";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
+import api from "@/api/axios";
 
 export default function Comments({ videoId }) {
   const [comments, setComments] = useState([]);
@@ -17,7 +17,7 @@ export default function Comments({ videoId }) {
 
   async function fetchComments() {
     try {
-      const res = await axios.get(`http://localhost:8000/comments/${videoId}`);
+      const res = await api.get(`/comments/${videoId}`);
       setComments(res.data);
     } catch (err) {
       console.error(err);
@@ -33,8 +33,8 @@ export default function Comments({ videoId }) {
       if (!token) {
         navigate("/login", { replace: true });
       }
-      const res = await axios.post(
-        "http://localhost:8000/comment",
+      const res = await api.post(
+        "/comment",
         { video_id: videoId, text: text },
         { headers: { Authorization: `Bearer ${token}` } }
       );

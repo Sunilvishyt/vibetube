@@ -1,7 +1,6 @@
 // WatchPage.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import {
   Collapsible,
@@ -12,6 +11,7 @@ import Comments from "@/components/my_components/Comments";
 import LikeButton from "@/components/my_components/LikeButton";
 import Subscribebutton from "@/components/my_components/Subscribebutton";
 import { Link } from "react-router-dom";
+import api from "@/api/axios";
 
 export default function WatchPage() {
   const { id } = useParams();
@@ -41,12 +41,12 @@ export default function WatchPage() {
             },
           });
         }
-        await axios.post(
-          "http://localhost:8000/view",
+        await api.post(
+          "/view",
           { video_id: id },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        const res = await axios.get(`http://localhost:8000/getvideo/${id}`);
+        const res = await api.get(`/getvideo/${id}`);
         setVideo(res.data);
         document.title = `${res.data.title} — MySite`;
       } catch {

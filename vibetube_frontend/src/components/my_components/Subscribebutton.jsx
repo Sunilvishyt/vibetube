@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { UserPlus, Check, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import api from "@/api/axios";
 
 export default function Subscribebutton({ channelId }) {
   // State for the number of subscribers
@@ -29,12 +29,9 @@ export default function Subscribebutton({ channelId }) {
         setLoading(true);
 
         // API call to get subscriber count and current user's status
-        const res = await axios.get(
-          `http://localhost:8000/subscribers/${channelId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const res = await api.get(`/subscribers/${channelId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (res.data.owner_watching == "True") setDisabled(true);
         setCount(res.data.subscribers);
 
@@ -83,8 +80,8 @@ export default function Subscribebutton({ channelId }) {
     setCount((prev) => (previousSubscribed ? prev - 1 : prev + 1));
 
     try {
-      await axios.post(
-        `http://localhost:8000/subscribe`,
+      await api.post(
+        `/subscribe`,
         { user_id: channelId },
         { headers: { Authorization: `Bearer ${token}` } }
       );

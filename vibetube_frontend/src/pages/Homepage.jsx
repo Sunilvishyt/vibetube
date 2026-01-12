@@ -4,11 +4,11 @@ import VideoCard from "@/components/my_components/VideoCard";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { formatDistanceToNow, parseISO } from "date-fns";
-import axios from "axios";
 import { toast, Toaster } from "sonner";
 import { Heart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BlurText from "@/components/ui/shadcn-io/blur-text";
+import api from "@/api/axios";
 
 const VIDEOS_PER_PAGE = 12;
 function Homepage() {
@@ -46,7 +46,7 @@ function Homepage() {
     }
 
     try {
-      const res = await axios.get("http://localhost:8000/verify-token", {
+      const res = await api.get("/verify-token", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -87,8 +87,8 @@ function Homepage() {
     try {
       const token = localStorage.getItem("access_token");
       let excludeParam = Array.from(sentVideoIds).join(",");
-      const response = await axios.get(
-        `http://localhost:8000/getvideos/${query}?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&exclude_ids=${excludeParam}`,
+      const response = await api.get(
+        `/getvideos/${query}?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&exclude_ids=${excludeParam}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

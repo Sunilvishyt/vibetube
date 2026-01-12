@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
 import {
   Form,
   FormControl,
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
+import api from "@/api/axios";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -50,7 +50,7 @@ const RegisterPage = () => {
   async function onSubmit(values) {
     setIsLoading(true);
     try {
-      await axios.post("http://localhost:8000/register", values);
+      await api.post("/register", values);
       // Redirect user to login page or home page
       navigate("/login", {
         state: {
