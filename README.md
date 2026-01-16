@@ -137,13 +137,21 @@ uvicorn app.main:app --reload
 cd ../vibetube_frontend
 ```
 
-##### 2. Install dependencies:
+##### 2. Configure Environment Variables:
+
+Create a .env file inside the frontend folder and add the following:
+
+```sh
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+##### 3. Install dependencies:
 
 ```sh
 npm install
 ```
 
-##### 3. Start the development server:
+##### 4. Start the development server:
 
 ```sh
 npm run dev
@@ -171,6 +179,7 @@ vibetube_frontend/
 │   ├── App.jsx           # Main routing
 │   └── main.jsx
 ├── package.json
+├── .env
 └── vite.config.js
 ```
 
