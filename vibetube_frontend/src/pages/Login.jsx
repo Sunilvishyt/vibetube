@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Heart } from "lucide-react";
-
+import { CircleX } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -54,9 +53,8 @@ const RegisterPage = () => {
     if (message) {
       // Show the toast
       toast.custom((t) => (
-        <div className="bg-gradient-to-r from-destructive to-primary text-white p-3 rounded-xl shadow-2xl w-full max-w-sm">
+        <div className="bg-gradient-to-r from-destructive to-primary text-white p-3 pl-5 rounded-xl shadow-2xl w-full max-w-sm">
           <div className="flex items-center gap-3">
-            <Heart className="h-3 w-5" />
             <div>
               <div className="font-semibold  text-sm">{message}</div>
               <div className="text-sm opacity-95"></div>
@@ -65,7 +63,7 @@ const RegisterPage = () => {
               onClick={() => toast.dismiss(t)}
               className="ml-auto bg-white/20 hover:bg-white/30 rounded-full h-8 w-8 text-xs font-semibold flex items-center justify-center shrink-0"
             >
-              Close
+              <CircleX />
             </button>
           </div>
         </div>
@@ -76,9 +74,8 @@ const RegisterPage = () => {
       navigate(location.pathname, { replace: true, state: {} });
     } else if (successMsg) {
       toast.custom((t) => (
-        <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white p-2 rounded-xl shadow-2xl w-full max-w-sm">
+        <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white p-2 pl-5 rounded-xl shadow-2xl w-full max-w-sm">
           <div className="flex items-center gap-3">
-            <Heart className="h-3 w-5" />
             <div>
               <div className="font-semibold  text-lg">{successMsg}</div>
               <div className="text-sm opacity-95">Successfuly Logged out!.</div>
@@ -87,7 +84,7 @@ const RegisterPage = () => {
               onClick={() => toast.dismiss(t)}
               className="ml-auto bg-white/20 hover:bg-white/30 rounded-full h-8 w-8 text-xs font-semibold flex items-center justify-center shrink-0"
             >
-              Close
+              <CircleX />
             </button>
           </div>
         </div>
@@ -106,7 +103,7 @@ const RegisterPage = () => {
     // --- Example API Call (Uncomment and configure when ready) ---
     setIsLoading(true);
     try {
-      const response = await api.post("/login", values);
+      const response = await api.post("/auth/login", values);
       localStorage.setItem("access_token", response.data.access_token);
       // Redirect user to login page or home page
       navigate("/", {

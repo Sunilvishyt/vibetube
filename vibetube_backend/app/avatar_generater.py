@@ -1,7 +1,6 @@
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
-
 COLOR_PALETTE = [
     "#4A90E2",  
     "#50E3C2",  

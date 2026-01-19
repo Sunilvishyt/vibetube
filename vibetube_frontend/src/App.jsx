@@ -18,8 +18,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/logout" element={<Logout />} />
+        <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/logout" element={<Logout />} />
         <Route path="/upload" element={<UploadPage />} />
         <Route path="/watch/:id" element={<WatchPage />} />
         <Route path="/search" element={<SearchPage />} />

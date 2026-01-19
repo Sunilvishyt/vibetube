@@ -20,7 +20,7 @@ export default function LikeButton({ videoId }) {
     const token = localStorage.getItem("access_token");
     if (!token) {
       console.log("Not authenticated. Skipping initial like fetch.");
-      navigate("/login");
+      navigate("/auth/login");
       return;
     }
 
@@ -46,7 +46,7 @@ export default function LikeButton({ videoId }) {
           (err.response.status === 401 || err.response.status === 403)
         ) {
           console.error("Authentication failed during initial like fetch.");
-          navigate("/login");
+          navigate("/auth/login");
         } else {
           console.error("Error fetching initial like status:", err);
         }
@@ -65,7 +65,7 @@ export default function LikeButton({ videoId }) {
     const token = localStorage.getItem("access_token");
     if (!token) {
       console.error("User not authenticated. Redirecting to login.");
-      navigate("/login");
+      navigate("/auth/login");
       return;
     }
 
@@ -82,7 +82,7 @@ export default function LikeButton({ videoId }) {
       await api.post(
         `/like`,
         { video_id: videoId, type: "like" },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
     } catch (err) {
       console.error("Error toggling like status. Reverting state.", err);

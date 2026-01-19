@@ -92,7 +92,7 @@ const UploadPage = () => {
         message: "Authentication failed: Access token not found.",
       });
       setIsUploading(false);
-      navigate("/login");
+      navigate("/auth/login");
     }
 
     const headers = {

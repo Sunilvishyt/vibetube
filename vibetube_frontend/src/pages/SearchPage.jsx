@@ -27,7 +27,7 @@ export default function SearchPage() {
   const verify_token = async () => {
     const token = localStorage.getItem("access_token");
     if (!token) {
-      navigate("/login", { replace: true });
+      navigate("/auth/login", { replace: true });
       return false;
     }
 
@@ -47,7 +47,7 @@ export default function SearchPage() {
 
       if (statusCode === 401 || statusCode === 403) {
         localStorage.removeItem("access_token"); // Clean up stored token
-        navigate("/login", {
+        navigate("/auth/login", {
           replace: true,
           state: {
             fromSearch: true,
@@ -76,7 +76,7 @@ export default function SearchPage() {
       const newVideos = res.data;
 
       setResults((prevResults) =>
-        isLoadMore ? [...prevResults, ...newVideos] : newVideos
+        isLoadMore ? [...prevResults, ...newVideos] : newVideos,
       );
 
       // Update offset for the next request

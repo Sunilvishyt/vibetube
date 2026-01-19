@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { toast, Toaster } from "sonner";
-import { Heart, Loader2 } from "lucide-react";
+import { CircleX, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BlurText from "@/components/ui/shadcn-io/blur-text";
 import api from "@/api/axios";
-
 const VIDEOS_PER_PAGE = 12;
+
 function Homepage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,10 +29,10 @@ function Homepage() {
 
   //  Track the currently active category/query
   const [currentQuery, setCurrentQuery] = useState(
-    location.state?.videoQuery || "random"
+    location.state?.videoQuery || "random",
   );
   const [whichPage, setWhichPage] = useState(
-    location.state?.whichPage || "For Your Vibe"
+    location.state?.whichPage || "For Your Vibe",
   );
   //  Loading state for the Load More button
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +41,13 @@ function Homepage() {
   const verify_token = async () => {
     const token = localStorage.getItem("access_token");
     if (!token) {
-      navigate("/login", { replace: true });
+      navigate("/auth/login", {
+        replace: true,
+        state: {
+          errorMessage: "Please login to continue!",
+          fromHomepage: true,
+        },
+      });
       return false;
     }
 
@@ -64,7 +70,7 @@ function Homepage() {
 
       if (statusCode === 401 || statusCode === 403) {
         localStorage.removeItem("access_token"); // Clean up stored token
-        navigate("/login", {
+        navigate("/auth/login", {
           replace: true,
           state: {
             errorMessage: "Login Expired, Please login again",
@@ -80,7 +86,7 @@ function Homepage() {
     query,
     fetchOffset,
     isLoadMore = false,
-    videosloading = false
+    videosloading = false,
   ) => {
     setIsLoading(true); // Start loading
     if (videosloading) setvideosLoading(true);
@@ -93,13 +99,13 @@ function Homepage() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       const newVideos = response.data;
 
       // Update video state: APPEND if loading more, REPLACE if a new category
       setVideos((prevVideos) =>
-        isLoadMore ? [...prevVideos, ...newVideos] : newVideos
+        isLoadMore ? [...prevVideos, ...newVideos] : newVideos,
       );
 
       // Update offset for the next request
@@ -160,9 +166,8 @@ function Homepage() {
     if (message) {
       // Show the toast
       toast.custom((t) => (
-        <div className="bg-gradient-to-r from-primary to-chart-1 text-white p-3 rounded-xl shadow-2xl w-full max-w-sm">
+        <div className="bg-gradient-to-r from-primary to-chart-1 text-white p-3 pl-5 rounded-xl shadow-2xl w-full max-w-sm">
           <div className="flex items-center gap-3">
-            <Heart className="h-3 w-5" />
             <div>
               <div className="font-semibold  text-lg">{message}</div>
               <div className="text-sm opacity-95">
@@ -173,7 +178,7 @@ function Homepage() {
               onClick={() => toast.dismiss(t)}
               className="ml-auto bg-white/20 hover:bg-white/30 rounded-full h-8 w-8 text-xs font-semibold flex items-center justify-center shrink-0"
             >
-              Close
+              <CircleX />
             </button>
           </div>
         </div>

@@ -31,12 +31,12 @@ export default function Comments({ videoId }) {
       setLoading(true);
       const token = localStorage.getItem("access_token");
       if (!token) {
-        navigate("/login", { replace: true });
+        navigate("/auth/login", { replace: true });
       }
       const res = await api.post(
         "/comment",
         { video_id: videoId, text: text },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       setText("");
       // append new comment

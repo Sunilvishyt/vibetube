@@ -1,8 +1,8 @@
-import os
-from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
+from dotenv import load_dotenv
 from jose import jwt
+import os
 
 load_dotenv()
 
@@ -27,9 +27,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     to_encode.update({"exp": expire})
-
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
     return encoded_jwt
 
 

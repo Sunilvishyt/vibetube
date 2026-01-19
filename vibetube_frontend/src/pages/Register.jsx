@@ -50,9 +50,9 @@ const RegisterPage = () => {
   async function onSubmit(values) {
     setIsLoading(true);
     try {
-      await api.post("/register", values);
+      await api.post("/users", values);
       // Redirect user to login page or home page
-      navigate("/login", {
+      navigate("/auth/login", {
         state: {
           successMessage: "Successfully registered!, login to continue",
           fromRegister: true,
@@ -164,7 +164,7 @@ const RegisterPage = () => {
                 Already have an account?{" "}
                 <a
                   className="hover:underline"
-                  onClick={() => navigate("/login")}
+                  onClick={() => navigate("/auth/login")}
                 >
                   Sign in
                 </a>

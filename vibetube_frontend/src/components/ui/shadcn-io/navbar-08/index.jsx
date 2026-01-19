@@ -194,7 +194,7 @@ export const Navbar08 = React.forwardRef(
       onUserItemClick,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [isMobile, setIsMobile] = useState(false);
     const containerRef = useRef(null);
@@ -232,7 +232,7 @@ export const Navbar08 = React.forwardRef(
           ref.current = node;
         }
       },
-      [ref]
+      [ref],
     );
 
     const handleSearchSubmit = (e) => {
@@ -250,7 +250,7 @@ export const Navbar08 = React.forwardRef(
         localStorage.removeItem("access_token");
 
         // 2. Execute navigation
-        navigate("/logout", { replace: true });
+        navigate("/auth/logout", { replace: true });
       }
 
       if (itemKey === "profile") {
@@ -313,7 +313,7 @@ export const Navbar08 = React.forwardRef(
         ref={combinedRef}
         className={cn(
           "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6 [&_*]:no-underline",
-          className
+          className,
         )}
         {...props}
       >
@@ -350,7 +350,7 @@ export const Navbar08 = React.forwardRef(
                                 ((activeQuery === "random" &&
                                   link.label === "Home") ||
                                   link.label.toLowerCase() === activeQuery) &&
-                                  "bg-accent text-accent-foreground"
+                                  "bg-accent text-accent-foreground",
                               )}
                             >
                               {link.label}
@@ -511,7 +511,7 @@ export const Navbar08 = React.forwardRef(
                           ((activeQuery === "random" &&
                             link.label === "Home") || // 2. Check if the link label matches the category query
                             link.label.toLowerCase() === activeQuery) &&
-                            "text-primary bg-accent/50"
+                            "text-primary bg-accent/50",
                         )}
                         data-active={link.active}
                       >
@@ -526,7 +526,7 @@ export const Navbar08 = React.forwardRef(
         </div>
       </header>
     );
-  }
+  },
 );
 
 Navbar08.displayName = "Navbar08";

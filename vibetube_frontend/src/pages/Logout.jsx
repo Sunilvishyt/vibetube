@@ -9,7 +9,7 @@ function Logout() {
       console.log("loggin out");
 
       localStorage.removeItem("access_token");
-      navigate("/login", {
+      navigate("/auth/login", {
         replace: true,
         state: {
           successMessage: "Successfully logged out",

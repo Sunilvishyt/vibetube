@@ -31,7 +31,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 app = FastAPI()
 origins = [
     "http://localhost:5173",
-    "https://yourfreedomain.com"
+    "https://exampledomain.com"
 ]
 
 app.add_middleware(
@@ -69,12 +69,14 @@ def get_avatar_url(user_id: int) -> str:
 
 # --- Function to hash password and verify.---
 def hash_password(password: str) -> str:
+    """Returns the hashed password."""
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password.decode('utf-8')
 
 
 def varify_hash(hashed_password: str, user_entered_password) -> bool:
+    """Return true if user enters correct password."""
     return bcrypt.checkpw(user_entered_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 
@@ -130,11 +132,10 @@ def get_video_duration(file_path: str) -> str:
         return format_duration(duration_float)
 
     except Exception as e:
-        # Don't hide errors silently. Fail loudly so you know what's wrong.
         raise RuntimeError(f"Failed to read duration: {e}")
 
     
-@app.post('/register')
+@app.post('/users')
 def create_user(user_details: pydantic_models.UserCreate, 
                 db: Session = Depends(get_db)
                 ):
@@ -177,7 +178,7 @@ def create_user(user_details: pydantic_models.UserCreate,
     )
 
 
-@app.post('/login', response_model=pydantic_models.Token)
+@app.post('/auth/login', response_model=pydantic_models.Token)
 def login_user_for_access_token(user_details: pydantic_models.UserLogin,
                                 db: Session = Depends(get_db)):
 
@@ -418,7 +419,7 @@ def like_video(data: pydantic_models.LikeToggle,
 def get_like_count(video_id: int, 
                    db: Session = Depends(get_db), 
                    current_user_id:int = Depends(get_current_user_id)
-                   ):
+            ):
     count = db.query(database_models.Like).filter(database_models.Like.video_id == video_id).count()
     user_liked = db.query(database_models.Like).filter(
         database_models.Like.video_id == video_id,

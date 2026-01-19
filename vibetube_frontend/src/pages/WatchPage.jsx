@@ -33,7 +33,7 @@ export default function WatchPage() {
       try {
         const token = localStorage.getItem("access_token");
         if (!token) {
-          navigate("/login", {
+          navigate("/auth/login", {
             replace: true,
             state: {
               fromWatch: true,
@@ -44,7 +44,7 @@ export default function WatchPage() {
         await api.post(
           "/view",
           { video_id: id },
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
         const res = await api.get(`/getvideo/${id}`);
         setVideo(res.data);

@@ -1,7 +1,7 @@
-from database import Base
-from sqlalchemy.orm import relationship
 from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text, UniqueConstraint, CheckConstraint
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from database import Base
 
 # ---------------- USER = CHANNEL ----------------
 

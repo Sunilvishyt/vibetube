@@ -20,7 +20,7 @@ export default function Subscribebutton({ channelId }) {
     const token = localStorage.getItem("access_token");
     if (!token) {
       console.log("Not authenticated. Redirecting to login.");
-      navigate("/login");
+      navigate("/auth/login");
       return;
     }
 
@@ -43,9 +43,9 @@ export default function Subscribebutton({ channelId }) {
           (err.response.status === 401 || err.response.status === 403)
         ) {
           console.error(
-            "Authentication failed during initial subscription fetch."
+            "Authentication failed during initial subscription fetch.",
           );
-          navigate("/login");
+          navigate("/auth/login");
         } else {
           console.error("Error fetching initial subscription status:", err);
         }
@@ -64,7 +64,7 @@ export default function Subscribebutton({ channelId }) {
     const token = localStorage.getItem("access_token");
     if (!token) {
       console.error("User not authenticated. Redirecting to login.");
-      navigate("/login");
+      navigate("/auth/login");
       return;
     }
 
@@ -83,12 +83,12 @@ export default function Subscribebutton({ channelId }) {
       await api.post(
         `/subscribe`,
         { user_id: channelId },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
     } catch (err) {
       console.error(
         "Error toggling subscription status. Reverting state.",
-        err
+        err,
       );
 
       // Revert the Optimistic Update if the API call fails
@@ -98,7 +98,7 @@ export default function Subscribebutton({ channelId }) {
       // Specifically handle backend errors like trying to subscribe to self
       if (err.response && err.response.status === 400) {
         alert(
-          "Action failed: The channel owner cannot subscribe to their own channel."
+          "Action failed: The channel owner cannot subscribe to their own channel.",
         );
       }
     } finally {
