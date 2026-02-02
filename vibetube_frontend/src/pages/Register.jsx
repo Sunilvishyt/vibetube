@@ -160,10 +160,10 @@ const RegisterPage = () => {
               </Button>
 
               {/* Sign In Link */}
-              <p className="text-center text-muted-foreground text-sm">
+              <p className="text-center text-muted-foreground text-sm cursor-default">
                 Already have an account?{" "}
                 <a
-                  className="hover:underline"
+                  className="hover:underline cursor-pointer"
                   onClick={() => navigate("/auth/login")}
                 >
                   Sign in

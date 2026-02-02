@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "@/components/my_components/navbar";
+import Navbar from "@/components/my_components/Navbar";
 import VideoCard from "@/components/my_components/VideoCard";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";

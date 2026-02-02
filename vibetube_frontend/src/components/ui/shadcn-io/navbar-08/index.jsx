@@ -44,7 +44,9 @@ import { ThemeToggleButton } from "../theme-toggle-button";
 
 // Simple logo component for the navbar
 const Logo = () => {
-  return <img src="/logo.png" alt="logo" className="h-10 pl-1" />;
+  return (
+    <img src="/logo.png" alt="logo" className="h-10 pl-1 cursor-default" />
+  );
 };
 
 // Hamburger icon component
@@ -131,7 +133,7 @@ const UserMenu = ({
     <DropdownMenuTrigger asChild>
       <Button
         variant="ghost"
-        className="h-9 px-2 py-0 hover:bg-accent hover:text-accent-foreground"
+        className="h-9 px-2 py-0 hover:bg-accent hover:text-accent-foreground cursor-pointer"
       >
         <Avatar className="h-7 w-7">
           <AvatarImage src={userAvatar} alt={userName} />
@@ -369,7 +371,7 @@ export const Navbar08 = React.forwardRef(
                   className="flex items-center space-x-2 text-primary hover:text-primary/90 transition-colors cursor-pointer"
                 >
                   <div className="text-2xl">{logo}</div>
-                  <span className="hidden font-bold text-xl sm:inline-block">
+                  <span className="hidden font-bold text-xl sm:inline-block cursor-default">
                     vibetube
                   </span>
                 </button>
@@ -419,6 +421,7 @@ export const Navbar08 = React.forwardRef(
                 <Tooltip>
                   <TooltipTrigger>
                     <Button
+                      className="cursor-pointer"
                       variant="ghost"
                       onClick={() => {
                         navigate("/upload");

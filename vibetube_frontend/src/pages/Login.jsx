@@ -1,5 +1,4 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -194,10 +193,10 @@ const RegisterPage = () => {
                 </Button>
 
                 {/* Sign In Link */}
-                <p className="text-center text-muted-foreground text-sm">
+                <p className="text-center text-muted-foreground text-sm cursor-default">
                   Don't have an account?{" "}
                   <a
-                    className="hover:underline"
+                    className="hover:underline cursor-pointer"
                     onClick={() => navigate("/register")}
                   >
                     Sign up

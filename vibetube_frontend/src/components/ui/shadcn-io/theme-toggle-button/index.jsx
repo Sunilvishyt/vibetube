@@ -168,9 +168,9 @@ export const ThemeToggleButton = ({
       size={showLabel ? "default" : "icon"}
       onClick={handleClick}
       className={cn(
-        "relative overflow-hidden transition-all",
+        "relative overflow-hidden transition-all cursor-pointer",
         showLabel && "gap-2",
-        className
+        className,
       )}
       aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
     >
