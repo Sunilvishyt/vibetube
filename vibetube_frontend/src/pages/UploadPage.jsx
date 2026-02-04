@@ -13,7 +13,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // IMPORTANT: Replace this with the actual URL of your FastAPI endpoint
-const UPLOAD_URL = `${BASE_URL}/upload-video`;
+const UPLOAD_URL = `${BASE_URL}/videos`;
 
 const UploadPage = () => {
   // State for form inputs and file

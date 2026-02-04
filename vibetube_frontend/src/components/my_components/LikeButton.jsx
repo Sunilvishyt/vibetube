@@ -80,7 +80,7 @@ export default function LikeButton({ videoId }) {
 
     try {
       await api.post(
-        `/like`,
+        `/likes`,
         { video_id: videoId, type: "like" },
         { headers: { Authorization: `Bearer ${token}` } },
       );

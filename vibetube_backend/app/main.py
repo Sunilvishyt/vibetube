@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, status, File, Form, UploadFile, Query
-from fastapi.security import OAuth2PasswordBearer # Tool to extract token from header
+from fastapi.security import OAuth2PasswordBearer 
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.sql.expression import func
 from sqlalchemy.exc import IntegrityError
@@ -42,11 +42,11 @@ app.add_middleware(
     allow_headers=['*']
 )
 
-app.mount("/avatars", StaticFiles(directory="storage/avatars"), name="avatars")
-app.mount("/videos", StaticFiles(directory="storage/videos"), name="videos")
-app.mount("/thumbnails", StaticFiles(directory="storage/thumbnails"), name="thumbnails")
+app.mount("/storage/avatars", StaticFiles(directory="storage/avatars"), name="avatars")
+app.mount("/storage/videos", StaticFiles(directory="storage/videos"), name="videos")
+app.mount("/storage/thumbnails", StaticFiles(directory="storage/thumbnails"), name="thumbnails")
 
-AVATAR_DIR = Path("storage/avatars") # <-- FIXED: Use Path()
+AVATAR_DIR = Path("storage/avatars") 
 VIDEO_DIR = Path("storage/videos")
 THUMB_DIR = Path("storage/thumbnails")
 THUMB_WIDTH = 320 # Standard thumbnail width
@@ -65,7 +65,7 @@ def get_avatar_filepath(user_id: int) -> Path:
 def get_avatar_url(user_id: int) -> str:
     """Returns the publicly accessible URL for the user's avatar."""
     filename = f"user_{user_id}.png"
-    return f"/avatars/{filename}"
+    return f"/storage/avatars/{filename}"
 
 # --- Function to hash password and verify.---
 def hash_password(password: str) -> str:
@@ -90,7 +90,7 @@ async def get_current_user_id(
     )
 
     try:
-        # 1. Decode the token using the secret key
+        # 1. Decoding the token using the secret key
         payload = jwt.decode(token, jwt_config.SECRET_KEY, algorithms=[jwt_config.ALGORITHM])
 
         # 2. Extract the user ID (the 'sub' claim)
@@ -205,7 +205,7 @@ def login_user_for_access_token(user_details: pydantic_models.UserLogin,
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-@app.post("/upload-video", response_model=pydantic_models.VideoOut)
+@app.post("/videos", response_model=pydantic_models.VideoOut)
 async def upload_video(
     title: str = Form(...),
     description: str = Form(None),
@@ -266,8 +266,8 @@ async def upload_video(
     # 5. Save to database
     video = database_models.Video(
         user_id=current_user_id,
-        video_url=f"http://127.0.0.1:8000/videos/{video_filename}",
-        thumbnail_url=f"http://127.0.0.1:8000/thumbnails/{thumb_filename}",
+        video_url=f"http://127.0.0.1:8000/storage/videos/{video_filename}",
+        thumbnail_url=f"http://127.0.0.1:8000/storage/thumbnails/{thumb_filename}",
         duration=duration,
         title=title,
         description=description,
@@ -281,9 +281,9 @@ async def upload_video(
 
 
 DEFAULT_VIDEO_LIMIT = 12
-@app.get("/getvideos/{vid_query}", response_model=list[pydantic_models.VideoOut])
+@app.get("/videos", response_model=list[pydantic_models.VideoOut])
 def get_videos(
-        vid_query: str,
+        vid_query: str = Query("random", min_length=1),
         limit: int = Query(DEFAULT_VIDEO_LIMIT, ge=1, le=50),  # Max 50 per request
         offset: int = Query(0, ge=0),
         exclude_ids: Optional[str] = Query(None),
@@ -374,7 +374,6 @@ def get_videos(
         videos = (
             basequery
             .filter(database_models.Video.category == vid_query)
-            # You might want to order by date or views here, not func.random()
             .order_by(database_models.Video.created_at.desc())
             .offset(offset)
             .limit(limit)
@@ -382,14 +381,14 @@ def get_videos(
         )
     return videos
 
-@app.get("/getvideo/{video_id}", response_model=pydantic_models.VideoOut)
+@app.get("/videos/{video_id}", response_model=pydantic_models.VideoOut)
 def get_single_video(video_id: int, db: Session = Depends(get_db)):
     video = db.query(database_models.Video).filter_by(id = video_id).first()
     if not video:
         raise HTTPException(status_code=404, detail="Video not found")
     return video
 
-@app.post("/like")
+@app.post("/likes")
 def like_video(data: pydantic_models.LikeToggle,
                db: Session = Depends(get_db),
                current_user_id: int = Depends(get_current_user_id)):
@@ -430,7 +429,7 @@ def get_like_count(video_id: int,
     else:
         return {"liked": "false", "likes": count}
 
-@app.post("/comment", response_model=pydantic_models.CommentOut)
+@app.post("/comments", response_model=pydantic_models.CommentOut)
 def create_comment(data: pydantic_models.CommentCreate,
                    db: Session = Depends(get_db),
                    current_user_id: int = Depends(get_current_user_id)
@@ -478,21 +477,20 @@ def verify_token(db:Session = Depends(get_db),
 def search_videos(
     query: str = Query(..., min_length=1),
     offset: int = Query(0, ge=0),
-    limit: int = Query(12, le=100), # Change default limit to 12
+    limit: int = Query(12, le=100),
     db: Session = Depends(get_db),
 ):
-    # Remove the offset calculation: offset = (page - 1) * limit
     like_query = f"%{query}%"
 
     videos = (
     db.query(database_models.Video)
-    .join(database_models.Video.owner)   # ✅ REQUIRED
+    .join(database_models.Video.owner) 
     .options(joinedload(database_models.Video.owner))
     .filter(
         or_(
             database_models.Video.title.ilike(like_query),
             database_models.Video.description.ilike(like_query),
-            database_models.User.username.ilike(like_query),  # ✅ correct
+            database_models.User.username.ilike(like_query),
         )
     )
     .order_by(
@@ -556,10 +554,8 @@ def increase_view(data:pydantic_models.ViewIncrement,
             return {"msg": "New view recorded and count incremented."}, status.HTTP_201_CREATED
         
         except IntegrityError:
-            # This occurs if the unique constraint is violated (i.e., the other request beat this one)
             db.rollback() # Rollback the failed insert attempt
             
-            # Now, fetch the existing view (created by the *other* request)
             existing_view_after_race = db.query(database_models.View).filter(
                 database_models.View.video_id == data.video_id,
                 database_models.View.user_id == current_user_id
@@ -575,7 +571,7 @@ def increase_view(data:pydantic_models.ViewIncrement,
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database error during race condition handling.")
 
 
-@app.post("/subscribe")
+@app.post("/subscribers")
 def subscribe_to_channel(data: pydantic_models.SubscribeToggle, 
                          db: Session = Depends(get_db), 
                          current_user_id: int = Depends(get_current_user_id)
@@ -621,14 +617,14 @@ def get_subscribers(channel_id:int,
         return {"subscribed": "false", "subscribers": subscribers_count, "owner_watching": str(owner_watching)}
 
 
-@app.get("/channeldetails/{channel_id}")
+@app.get("/users/{channel_id}")
 def channel_details(channel_id:int, 
                     db:Session = Depends(get_db),
                     ):
     channel = db.query(database_models.User).filter(database_models.User.id == channel_id).first()
     return channel
 
-@app.get("/morechanneldetails/{channel_id}")
+@app.get("/users/analytics/{channel_id}")
 def more_channel_details(channel_id:int, 
                     db:Session = Depends(get_db),
                     ):
@@ -647,7 +643,7 @@ def more_channel_details(channel_id:int,
     return {"total_videos": total_videos, "total_views": total_views, "total_subscribers": total_subscribers}
 
 
-@app.post("/updatechanneldetails")
+@app.put("/users")
 async def update_channel_details(
     username: str = Form(...),
     description: str = Form(None),
@@ -682,5 +678,4 @@ async def update_channel_details(
     user.username = username
     user.channel_description = description
     db.commit()
-
     pass

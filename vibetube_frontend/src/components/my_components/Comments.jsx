@@ -34,7 +34,7 @@ export default function Comments({ videoId }) {
         navigate("/auth/login", { replace: true });
       }
       const res = await api.post(
-        "/comment",
+        "/comments",
         { video_id: videoId, text: text },
         { headers: { Authorization: `Bearer ${token}` } },
       );

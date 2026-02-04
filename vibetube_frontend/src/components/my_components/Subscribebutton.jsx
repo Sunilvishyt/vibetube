@@ -81,7 +81,7 @@ export default function Subscribebutton({ channelId }) {
 
     try {
       await api.post(
-        `/subscribe`,
+        `/subscribers`,
         { user_id: channelId },
         { headers: { Authorization: `Bearer ${token}` } },
       );

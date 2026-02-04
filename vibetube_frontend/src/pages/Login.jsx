@@ -97,7 +97,6 @@ const RegisterPage = () => {
     navigate,
   ]);
 
-  // 💡 This is where you would put your Axios API call to FastAPI
   async function onSubmit(values) {
     // --- Example API Call (Uncomment and configure when ready) ---
     setIsLoading(true);
@@ -173,7 +172,7 @@ const RegisterPage = () => {
                         <Input
                           autoComplete="off"
                           className="bg-background"
-                          placeholder="Enter password"
+                          placeholder="enter password"
                           type="password"
                           {...field}
                           onClick={() => setError("")}

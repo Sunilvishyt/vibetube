@@ -4,7 +4,6 @@ from sqlalchemy.sql import func
 from database import Base
 
 # ---------------- USER = CHANNEL ----------------
-
 class User(Base):
     __tablename__ = "users"
 

@@ -94,7 +94,7 @@ function Homepage() {
       const token = localStorage.getItem("access_token");
       let excludeParam = Array.from(sentVideoIds).join(",");
       const response = await api.get(
-        `/getvideos/${query}?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&exclude_ids=${excludeParam}`,
+        `/videos?vid_query=${query}&limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&exclude_ids=${excludeParam}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -250,6 +250,7 @@ function Homepage() {
                 ))}
               </div>
             </div>
+
             {/* 💡 LOAD MORE BUTTON */}
             <div className="flex justify-center w-full mt-8">
               {hasMore && (

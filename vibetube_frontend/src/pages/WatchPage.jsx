@@ -46,7 +46,7 @@ export default function WatchPage() {
           { video_id: id },
           { headers: { Authorization: `Bearer ${token}` } },
         );
-        const res = await api.get(`/getvideo/${id}`);
+        const res = await api.get(`/videos/${id}`);
         setVideo(res.data);
         document.title = `${res.data.title} — MySite`;
       } catch {

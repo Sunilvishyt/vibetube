@@ -52,7 +52,7 @@ function Profilepage() {
   const [joinedDate, setJoinedDate] = useState("");
   const [videos, setVideos] = useState([]);
   const [editOptions, setEditOptions] = useState(
-    location.state?.editOptions || false
+    location.state?.editOptions || false,
   );
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -63,7 +63,7 @@ function Profilepage() {
   const fetchUserDetails = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await api.get(`/channeldetails/${id}`);
+      const response = await api.get(`/users/${id}`);
       setUsername(response.data.username);
       setDescription(response.data.channel_description);
       setJoinedDate(formatIsoDate(response.data.created_at));
@@ -78,7 +78,7 @@ function Profilepage() {
   const fetchMoreDetails = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await api.get(`/morechanneldetails/${id}`);
+      const response = await api.get(`/users/analytics/${id}`);
       setSubscribers(response.data.total_subscribers);
       setViews(response.data.total_views);
       setTotalVideos(response.data.total_videos);
@@ -95,17 +95,17 @@ function Profilepage() {
       try {
         const token = localStorage.getItem("access_token");
         const response = await api.get(
-          `/getvideos/ChannelVideos?limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&channel_id=${id}`,
+          `/videos?vid_query=ChannelVideos&limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&channel_id=${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         const newVideos = response.data;
         // Ensure no duplicates if merging logic is complex (simple append here)
         setVideos((prevVideos) =>
-          isLoadMore ? [...prevVideos, ...newVideos] : newVideos
+          isLoadMore ? [...prevVideos, ...newVideos] : newVideos,
         );
 
         // Update offset for the next request
@@ -120,7 +120,7 @@ function Profilepage() {
         setIsLoading(false);
       }
     },
-    [id]
+    [id],
   );
 
   const handleLoadMore = () => {
@@ -166,7 +166,7 @@ function Profilepage() {
       0,
       0,
       canvas.width,
-      canvas.height
+      canvas.height,
     );
 
     return new Promise((resolve) => {
@@ -188,7 +188,7 @@ function Profilepage() {
       formData.append("profile_image", blob, "avatar.png");
     }
 
-    await api.post("/updatechanneldetails", formData, {
+    await api.put("/users", formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
@@ -293,7 +293,7 @@ function Profilepage() {
                               onChange={(e) => {
                                 if (e.target.files?.length) {
                                   setSelectedImage(
-                                    URL.createObjectURL(e.target.files[0])
+                                    URL.createObjectURL(e.target.files[0]),
                                   );
                                 }
                               }}
