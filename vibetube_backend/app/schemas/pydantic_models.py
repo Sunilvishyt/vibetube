@@ -18,7 +18,7 @@ class UserOut(BaseModel):
     created_at : datetime
 
     class Config:
-        from_attributes =True
+        orm_mode = True
 
 
 class VideoCreate(BaseModel):
@@ -33,7 +33,7 @@ class UserInVideo(BaseModel):
     profile_image: Optional[str] = None 
 
     class Config:
-        from_attributes = True 
+        orm_mode = True
 
 class VideoOut(VideoCreate):
     id: int
@@ -45,7 +45,7 @@ class VideoOut(VideoCreate):
     duration: str
     owner: UserInVideo
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 class VideoQuery(BaseModel):
     vidQuery:str
@@ -70,7 +70,7 @@ class CommentUserOut(BaseModel):
     profile_image: str | None
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 class CommentOut(BaseModel):
     id: int
@@ -80,7 +80,7 @@ class CommentOut(BaseModel):
     user: CommentUserOut 
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 class Token(BaseModel):
     access_token: str

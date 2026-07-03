@@ -1,7 +1,17 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text, UniqueConstraint, CheckConstraint
+from sqlalchemy import (
+    Column,
+    String,
+    Integer,
+    ForeignKey,
+    DateTime,
+    Text,
+    UniqueConstraint,
+    CheckConstraint,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from database import Base
+from config.database import Base
+
 
 # ---------------- USER = CHANNEL ----------------
 class User(Base):
@@ -25,15 +35,15 @@ class User(Base):
     subscriptions_made = relationship(
         "Subscription",
         back_populates="user",
-        foreign_keys="[Subscription.user_id]", # <-- Explicitly defines the join column
-        cascade="all, delete"
+        foreign_keys="[Subscription.user_id]",  # <-- Explicitly defines the join column
+        cascade="all, delete",
     )
 
     subscribers = relationship(
         "Subscription",
         back_populates="channel",
         foreign_keys="[Subscription.channel_id]",
-        cascade="all, delete"
+        cascade="all, delete",
     )
 
 
@@ -48,7 +58,7 @@ class Video(Base):
     description = Column(Text, nullable=True)
 
     video_url = Column(String, nullable=False)
-    thumbnail_url = Column(String, nullable=False) 
+    thumbnail_url = Column(String, nullable=False)
 
     visibility = Column(String(20), default="public")
     category = Column(String(50), nullable=True)
@@ -72,7 +82,7 @@ class Like(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     video_id = Column(Integer, ForeignKey("videos.id", ondelete="CASCADE"))
 
-    type = Column(String(10), nullable=False) 
+    type = Column(String(10), nullable=False)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
@@ -80,7 +90,9 @@ class Like(Base):
     user = relationship("User", back_populates="likes")
     video = relationship("Video", back_populates="likes")
 
+
 # ---------------- COMMENTS ----------------
+
 
 class Comment(Base):
     __tablename__ = "comments"
@@ -98,7 +110,7 @@ class Comment(Base):
     video = relationship("Video", back_populates="comments")
 
 
-#----------------------View---------------------
+# ----------------------View---------------------
 class View(Base):
     __tablename__ = "view"
 
@@ -107,11 +119,9 @@ class View(Base):
     video_id = Column(Integer, ForeignKey("videos.id", ondelete="CASCADE"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    __table_args__ = (
-        UniqueConstraint('user_id', 'video_id', name='_user_video_uc'),
-    )
+    __table_args__ = (UniqueConstraint("user_id", "video_id", name="_user_video_uc"),)
 
-    #relationship
+    # relationship
     user = relationship("User", back_populates="view")
     video = relationship("Video", back_populates="view")
 
@@ -125,13 +135,17 @@ class Subscription(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     __table_args__ = (
-        UniqueConstraint('user_id', 'channel_id', name='_user_subscriber_uc'),
-        CheckConstraint('user_id != channel_id', name='check_no_self_subscribe')
+        UniqueConstraint("user_id", "channel_id", name="_user_subscriber_uc"),
+        CheckConstraint("user_id != channel_id", name="check_no_self_subscribe"),
     )
 
-    #relationship
+    # relationship
     # Relationship to the SUBSCRIBER (the one who clicked follow)
-    user = relationship("User", back_populates="subscriptions_made", foreign_keys=[user_id])
-    
+    user = relationship(
+        "User", back_populates="subscriptions_made", foreign_keys=[user_id]
+    )
+
     # Relationship to the CHANNEL (the one being followed)
-    channel = relationship("User", back_populates="subscribers", foreign_keys=[channel_id])
+    channel = relationship(
+        "User", back_populates="subscribers", foreign_keys=[channel_id]
+    )

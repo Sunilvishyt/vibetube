@@ -32,7 +32,7 @@ export default function SearchPage() {
     }
 
     try {
-      const res = await api.get("/verify-token", {
+      const res = await api.get("/api/auth/verify-token", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,7 +65,7 @@ export default function SearchPage() {
     }
 
     try {
-      const res = await api.get("/search", {
+      const res = await api.get("/api/videos/search", {
         params: {
           query: query,
           offset: fetchOffset,

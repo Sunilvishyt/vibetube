@@ -50,7 +50,7 @@ const RegisterPage = () => {
   async function onSubmit(values) {
     setIsLoading(true);
     try {
-      await api.post("/users", values);
+      await api.post("/api/auth/register", values);
       // Redirect user to login page or home page
       navigate("/auth/login", {
         state: {

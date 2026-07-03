@@ -17,7 +17,7 @@ export default function Comments({ videoId }) {
 
   async function fetchComments() {
     try {
-      const res = await api.get(`/comments/${videoId}`);
+      const res = await api.get(`/api/videos/comments/${videoId}`);
       setComments(res.data);
     } catch (err) {
       console.error(err);
@@ -34,7 +34,7 @@ export default function Comments({ videoId }) {
         navigate("/auth/login", { replace: true });
       }
       const res = await api.post(
-        "/comments",
+        "/api/videos/comments/",
         { video_id: videoId, text: text },
         { headers: { Authorization: `Bearer ${token}` } },
       );

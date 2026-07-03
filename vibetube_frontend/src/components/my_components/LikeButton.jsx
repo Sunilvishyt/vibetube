@@ -29,7 +29,7 @@ export default function LikeButton({ videoId }) {
         setLoading(true);
 
         // Fetch like status and total count for the video
-        const res = await api.get(`/likes/${videoId}`, {
+        const res = await api.get(`/api/videos/likes/${videoId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -80,7 +80,7 @@ export default function LikeButton({ videoId }) {
 
     try {
       await api.post(
-        `/likes`,
+        `/api/videos/likes/`,
         { video_id: videoId, type: "like" },
         { headers: { Authorization: `Bearer ${token}` } },
       );

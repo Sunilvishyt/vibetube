@@ -63,7 +63,7 @@ function Profilepage() {
   const fetchUserDetails = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await api.get(`/users/${id}`);
+      const response = await api.get(`/api/users/${id}`);
       setUsername(response.data.username);
       setDescription(response.data.channel_description);
       setJoinedDate(formatIsoDate(response.data.created_at));
@@ -78,7 +78,7 @@ function Profilepage() {
   const fetchMoreDetails = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await api.get(`/users/analytics/${id}`);
+      const response = await api.get(`/api/users/analytics/${id}`);
       setSubscribers(response.data.total_subscribers);
       setViews(response.data.total_views);
       setTotalVideos(response.data.total_videos);
@@ -95,7 +95,7 @@ function Profilepage() {
       try {
         const token = localStorage.getItem("access_token");
         const response = await api.get(
-          `/videos?vid_query=ChannelVideos&limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&channel_id=${id}`,
+          `/api/videos?vid_query=ChannelVideos&limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&channel_id=${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -188,7 +188,7 @@ function Profilepage() {
       formData.append("profile_image", blob, "avatar.png");
     }
 
-    await api.put("/users", formData, {
+    await api.put("/api/users", formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",

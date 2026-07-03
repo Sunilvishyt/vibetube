@@ -101,7 +101,7 @@ const RegisterPage = () => {
     // --- Example API Call (Uncomment and configure when ready) ---
     setIsLoading(true);
     try {
-      const response = await api.post("/auth/login", values);
+      const response = await api.post("/api/auth/login", values);
       localStorage.setItem("access_token", response.data.access_token);
       // Redirect user to login page or home page
       navigate("/", {

@@ -42,11 +42,11 @@ export default function WatchPage() {
           });
         }
         await api.post(
-          "/view",
+          "/api/videos/view",
           { video_id: id },
           { headers: { Authorization: `Bearer ${token}` } },
         );
-        const res = await api.get(`/videos/${id}`);
+        const res = await api.get(`/api/videos/${id}`);
         setVideo(res.data);
         document.title = `${res.data.title} — MySite`;
       } catch {

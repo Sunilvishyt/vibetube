@@ -29,7 +29,7 @@ export default function Subscribebutton({ channelId }) {
         setLoading(true);
 
         // API call to get subscriber count and current user's status
-        const res = await api.get(`/subscribers/${channelId}`, {
+        const res = await api.get(`/api/subscribers/${channelId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.data.owner_watching == "True") setDisabled(true);
@@ -81,7 +81,7 @@ export default function Subscribebutton({ channelId }) {
 
     try {
       await api.post(
-        `/subscribers`,
+        `/api/subscribers`,
         { user_id: channelId },
         { headers: { Authorization: `Bearer ${token}` } },
       );

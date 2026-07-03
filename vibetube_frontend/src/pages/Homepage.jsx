@@ -52,7 +52,7 @@ function Homepage() {
     }
 
     try {
-      const res = await api.get("/verify-token", {
+      const res = await api.get("/api/auth/verify-token", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -94,7 +94,7 @@ function Homepage() {
       const token = localStorage.getItem("access_token");
       let excludeParam = Array.from(sentVideoIds).join(",");
       const response = await api.get(
-        `/videos?vid_query=${query}&limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&exclude_ids=${excludeParam}`,
+        `/api/videos?vid_query=${query}&limit=${VIDEOS_PER_PAGE}&offset=${fetchOffset}&exclude_ids=${excludeParam}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
