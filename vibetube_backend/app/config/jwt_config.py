@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from typing import Annotated
 from jose import jwt, JWTError
 from fastapi import Depends, HTTPException, status
-from config import jwt_config
+from app.config import jwt_config
 from fastapi.security import OAuth2PasswordBearer
 
 import os

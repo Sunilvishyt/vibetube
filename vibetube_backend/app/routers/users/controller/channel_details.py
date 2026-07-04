@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import Depends
-from config.database import get_db
-from models import database_models
+from app.config.database import get_db
+from app.models import database_models
 
 
 def channel_details(

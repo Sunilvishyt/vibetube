@@ -1,8 +1,8 @@
-from models import database_models
+from app.models import database_models
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from sqlalchemy.orm import joinedload
-from config.database import get_db
+from app.config.database import get_db
 
 
 def get_comments(video_id: int, db: Session = Depends(get_db)):

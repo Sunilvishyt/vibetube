@@ -1,13 +1,13 @@
 from fastapi import Form, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
-from config.jwt_config import get_current_user_id
-from models import database_models
+from app.config.jwt_config import get_current_user_id
+from app.models import database_models
 from PIL import Image
 from io import BytesIO
-from config.database import get_db
+from app.config.database import get_db
 import uuid
-from config.supabase_config import supabase
-from constants.supabase_constants import BUCKET_NAME
+from app.config.supabase_config import supabase
+from app.constants.supabase_constants import BUCKET_NAME
 
 
 async def update_channel_details(

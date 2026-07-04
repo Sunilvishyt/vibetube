@@ -1,9 +1,9 @@
-from schemas import pydantic_models
+from app.schemas import pydantic_models
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from config.jwt_config import get_current_user_id
-from models import database_models
-from config.database import get_db
+from app.config.jwt_config import get_current_user_id
+from app.models import database_models
+from app.config.database import get_db
 
 
 def create_comment(

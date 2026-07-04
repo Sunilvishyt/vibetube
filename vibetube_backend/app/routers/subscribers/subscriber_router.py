@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from routers.subscribers.controller.subscribe_channel import subscribe_to_channel
-from routers.subscribers.controller.get_subscribers import get_subscribers
+from app.routers.subscribers.controller.subscribe_channel import subscribe_to_channel
+from app.routers.subscribers.controller.get_subscribers import get_subscribers
 
 subscriber_router = APIRouter()
 

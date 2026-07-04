@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from routers.auth.controller.login_controller import login_user as login_controller
-from routers.auth.controller.register_controller import (
+from app.routers.auth.controller.login_controller import login_user as login_controller
+from app.routers.auth.controller.register_controller import (
     register_user as register_controller,
 )
-from routers.auth.controller.verify_token_controller import (
+from app.routers.auth.controller.verify_token_controller import (
     verify_token as verify_token_controller,
 )
 

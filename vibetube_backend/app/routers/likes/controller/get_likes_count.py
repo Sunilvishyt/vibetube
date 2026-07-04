@@ -1,8 +1,8 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from models import database_models
-from config.jwt_config import get_current_user_id
-from config.database import get_db
+from app.models import database_models
+from app.config.jwt_config import get_current_user_id
+from app.config.database import get_db
 
 
 def get_likes_count(

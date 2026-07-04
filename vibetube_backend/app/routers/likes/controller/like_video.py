@@ -1,9 +1,9 @@
-from schemas import pydantic_models
+from app.schemas import pydantic_models
 from sqlalchemy.orm import Session
 from fastapi import Depends
-from models import database_models
-from config.jwt_config import get_current_user_id
-from config.database import get_db
+from app.models import database_models
+from app.config.jwt_config import get_current_user_id
+from app.config.database import get_db
 
 
 def like_video(

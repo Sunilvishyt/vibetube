@@ -1,4 +1,4 @@
-from constants.app_constants import AVATAR_DIR
+from app.constants.app_constants import AVATAR_DIR
 from pathlib import Path
 
 

@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from utils.password_utils import verify_hash
-from schemas import pydantic_models
-from models import database_models
+from app.utils.password_utils import verify_hash
+from app.schemas import pydantic_models
+from app.models import database_models
 from sqlalchemy.orm import Session
-from config.database import get_db
+from app.config.database import get_db
 from datetime import timedelta
-from config import jwt_config
+from app.config import jwt_config
 
 router = APIRouter()
 

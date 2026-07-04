@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from schemas import pydantic_models
-from routers.comments.controller.create_comment import create_comment
-from routers.comments.controller.get_comments import get_comments
+from app.schemas import pydantic_models
+from app.routers.comments.controller.create_comment import create_comment
+from app.routers.comments.controller.get_comments import get_comments
 
 comments_router = APIRouter()
 

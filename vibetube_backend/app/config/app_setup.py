@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from constants.app_constants import FRONTEND_URL
+from app.constants.app_constants import FRONTEND_URL
 
 origins = ["http://localhost:5173", FRONTEND_URL]
 

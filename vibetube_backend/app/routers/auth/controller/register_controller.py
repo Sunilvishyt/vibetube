@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from models import database_models
-from schemas import pydantic_models
-from config.database import get_db
-from utils.password_utils import hash_password
+from app.models import database_models
+from app.schemas import pydantic_models
+from app.config.database import get_db
+from app.utils.password_utils import hash_password
 import random
 
 router = APIRouter()

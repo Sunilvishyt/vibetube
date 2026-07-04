@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from routers.likes.controller.like_video import like_video
-from routers.likes.controller.get_likes_count import get_likes_count
+from app.routers.likes.controller.like_video import like_video
+from app.routers.likes.controller.get_likes_count import get_likes_count
 
 likes_router = APIRouter()
 

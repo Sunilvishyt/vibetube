@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from routers.users.controller.channel_details import channel_details
-from routers.users.controller.more_channel_details import more_channel_details
-from routers.users.controller.update_channel_details import update_channel_details
+from app.routers.users.controller.channel_details import channel_details
+from app.routers.users.controller.more_channel_details import more_channel_details
+from app.routers.users.controller.update_channel_details import update_channel_details
 
 user_router = APIRouter()
 

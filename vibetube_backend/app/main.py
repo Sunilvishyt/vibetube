@@ -1,6 +1,6 @@
-from config.app_setup import configure_app
+from app.config.app_setup import configure_app
 from dotenv import load_dotenv
-from routers.main_router import main_router
+from app.routers.main_router import main_router
 from fastapi import (
     FastAPI,
 )

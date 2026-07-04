@@ -94,6 +94,9 @@ Create a .env file inside the vibetube_backend folder and add the following:
 DATABASE_URL=postgresql://user:password@localhost:5432/vibetube
 SECRET_KEY="anyrandomstring"
 ALGORITHM=HS256
+SUPABASE_URL=
+SUPABASE_KEY=
+FRONTEND_URL=optional
 ```
 
 #### 5. Set up Storage Directories:
