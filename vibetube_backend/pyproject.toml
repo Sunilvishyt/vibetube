@@ -9,9 +9,10 @@ dependencies = [
     "fastapi[all]>=0.123.5",
     "passlib[bcrypt]>=1.7.4",
     "pillow>=12.0.0",
-    "psycopg2>=2.9.11",
+    "psycopg2-binary>=2.9.12",
     "python-dotenv>=1.2.1",
     "python-jose[cryptography]>=3.5.0",
     "sqlalchemy>=2.0.44",
+    "supabase>=2.31.0",
     "uvicorn>=0.38.0",
 ]
