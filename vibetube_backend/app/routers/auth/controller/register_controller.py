@@ -5,13 +5,12 @@ from models import database_models
 from schemas import pydantic_models
 from config.database import get_db
 from utils.password_utils import hash_password
-from utils.avatar_utils import get_avatar_filepath, get_avatar_url
-from utils.avatar_generater import generate_initial_avatar
+import random
 
 router = APIRouter()
+color_list = ["orange", "blue", "black", "red", "green"]
 
 
-# @router.post("/")
 def register_user(
     user_details: pydantic_models.UserCreate, db: Session = Depends(get_db)
 ):
@@ -30,18 +29,15 @@ def register_user(
             )
 
         hashed_password = hash_password(user_details.password)
-        new_user_id = db.query(database_models.User).count() + 1
-        avatar_path = get_avatar_filepath(new_user_id)
 
-        generate_initial_avatar(
-            user_id=new_user_id,
-            full_name=user_details.username,
-            output_path=avatar_path,
-        )
+        # create avatar
+        first_word = user_details.username[0].capitalize()
+        color = random.choice(color_list)
+        avatar_url = f"https://placehold.co/128x128/{color}/white?text={first_word}"
 
         user = database_models.User(
             username=user_details.username,
-            profile_image=f"http://127.0.0.1:8000{get_avatar_url(new_user_id)}",
+            profile_image=avatar_url,
             email=user_details.email,
             password_hash=hashed_password,
         )

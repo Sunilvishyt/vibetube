@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from constants.app_constants import FRONTEND_URL
 
-
-origins = ["http://localhost:5173", "https://exampledomain.com"]
+origins = ["http://localhost:5173", FRONTEND_URL]
 
 
 def configure_app(app: FastAPI):

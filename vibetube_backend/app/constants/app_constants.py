@@ -1,6 +1,10 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
+
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 AVATAR_DIR = Path("storage/avatars")
 VIDEO_DIR = Path("storage/videos")
 THUMB_DIR = Path("storage/thumbnails")
