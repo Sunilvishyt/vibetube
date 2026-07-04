@@ -36,6 +36,4 @@ dist-ssr
 *.sln
 *.sw?
 
-thumbnails/
-videos/
-avatars/
+storage/
