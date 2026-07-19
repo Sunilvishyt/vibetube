@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from typing import Annotated
 from jose import jwt, JWTError
 from fastapi import Depends, HTTPException, status
-from app.config import jwt_config
 from fastapi.security import OAuth2PasswordBearer
 
 import os
@@ -54,9 +53,7 @@ async def get_current_user_id(
     """function to decode the JWT token received from frontend and extract the user ID"""
     try:
         # 1. Decoding the token using the secret key
-        payload = jwt.decode(
-            token, jwt_config.SECRET_KEY, algorithms=[jwt_config.ALGORITHM]
-        )
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
         # 2. Extract the user ID (the 'sub' claim)
         user_id: str = payload.get("sub")

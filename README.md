@@ -121,7 +121,7 @@ vibetube_backend/
 #### 6. Initialize the Database:
 
 ```sh
-python app/init_db.py
+python -m app.init_db
 ```
 
 #### 7. Start the Server:
