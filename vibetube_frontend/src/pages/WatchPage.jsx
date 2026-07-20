@@ -12,6 +12,7 @@ import LikeButton from "@/components/my_components/LikeButton";
 import Subscribebutton from "@/components/my_components/Subscribebutton";
 import { Link } from "react-router-dom";
 import api from "@/api/axios";
+import WatchPageSkeleton from "@/components/skeletons/WatchPageSkeleton";
 
 export default function WatchPage() {
   const { id } = useParams();
@@ -61,9 +62,10 @@ export default function WatchPage() {
 
   if (loading)
     return (
-      <div className="p-8 w-full h-screen flex items-center justify-center">
-        Loading...
-      </div>
+      // <div className="p-8 w-full h-screen flex items-center justify-center">
+      //   Loading...
+      // </div>
+      <WatchPageSkeleton />
     );
   if (error) return <div className="p-8 text-destructive">{error}</div>;
   if (!video) return null;
@@ -169,3 +171,5 @@ export default function WatchPage() {
     </div>
   );
 }
+
+export { WatchPage as Component };

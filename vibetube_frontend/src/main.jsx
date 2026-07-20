@@ -8,9 +8,7 @@ import { ThemeProvider } from "./components/my_components/theme-provider";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider defaultTheme="system" storageKey="app-theme">
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <App />
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode>,
 );

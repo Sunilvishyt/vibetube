@@ -13,7 +13,7 @@ function Historypage() {
       },
     });
   });
-  return <div>likedpage</div>;
+  return null;
 }
 
-export default Historypage;
+export { Historypage as Component };

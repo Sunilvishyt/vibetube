@@ -425,4 +425,6 @@ const UploadPage = () => {
   );
 };
 
-export default UploadPage;
+export { UploadPage as Component };
+
+// export default UploadPage;

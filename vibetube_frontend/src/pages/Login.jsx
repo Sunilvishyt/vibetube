@@ -33,7 +33,7 @@ const formSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number"),
 });
 
-const RegisterPage = () => {
+export const RegisterPage = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
@@ -210,4 +210,6 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+// export default RegisterPage;
+
+export { RegisterPage as Component };

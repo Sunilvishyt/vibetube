@@ -11,7 +11,7 @@ import BlurText from "@/components/ui/shadcn-io/blur-text";
 import api from "@/api/axios";
 const VIDEOS_PER_PAGE = 12;
 
-function Homepage() {
+export function Homepage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [videos, setVideos] = useState([]);
@@ -273,4 +273,6 @@ function Homepage() {
   );
 }
 
-export default Homepage;
+export { Homepage as Component };
+
+// export default Homepage;

@@ -13,7 +13,9 @@ function Likedpage() {
       },
     });
   });
-  return <div>likedpage</div>;
+  return null;
 }
 
-export default Likedpage;
+export { Likedpage as Component };
+
+// export default Likedpage;

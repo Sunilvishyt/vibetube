@@ -177,4 +177,6 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export { RegisterPage as Component };
+
+// export default RegisterPage;

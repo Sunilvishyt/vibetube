@@ -430,4 +430,6 @@ function Profilepage() {
   );
 }
 
-export default Profilepage;
+export { Profilepage as Component };
+
+// export default Profilepage;

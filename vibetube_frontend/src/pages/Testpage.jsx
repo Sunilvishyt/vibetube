@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import MoreButton from "@/components/my_components/MoreButton";
+import WatchPageSkeleton from "@/components/skeletons/WatchPageSkeleton";
 function Testpage() {
   return (
     <div>
-      <Sheet>
+      {/* <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline">Open</Button>
         </SheetTrigger>
@@ -40,9 +41,12 @@ function Testpage() {
         molestiae officiis modi corrupti! Molestiae ipsa minima ullam dicta ab
         repudiandae?
       </p>
-      <MoreButton />
+      <MoreButton /> */}
+      <WatchPageSkeleton />
     </div>
   );
 }
 
-export default Testpage;
+export { Testpage as Component };
+
+// export default Testpage;

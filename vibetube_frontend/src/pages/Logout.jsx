@@ -22,4 +22,6 @@ function Logout() {
   return <div>Logging out....</div>;
 }
 
-export default Logout;
+export { Logout as Component };
+
+// export default Logout;

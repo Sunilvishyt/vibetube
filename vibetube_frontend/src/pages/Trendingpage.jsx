@@ -13,7 +13,9 @@ function Trendingpage() {
       },
     });
   });
-  return <div>Trendingpage</div>;
+  return null;
 }
 
-export default Trendingpage;
+export { Trendingpage as Component };
+
+// export default Trendingpage;

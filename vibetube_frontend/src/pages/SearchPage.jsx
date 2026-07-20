@@ -213,3 +213,5 @@ export default function SearchPage() {
     </>
   );
 }
+
+export { SearchPage as Component };
